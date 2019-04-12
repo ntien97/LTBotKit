@@ -24,6 +24,7 @@ var debug = require('debug')('botkit:main');
 
 var bot_options = {
     replyWithTyping: true,
+    typingDelayFactor: 1
 };
 
 // Use a mongo database if specified, otherwise store in a JSON file local to the app.

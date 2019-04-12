@@ -1,6 +1,7 @@
 .env
 .data
-node_modules
+node_modules/
+node_modules/*
 components/routes/_*
 .sass-cache/
 .DS_Store
