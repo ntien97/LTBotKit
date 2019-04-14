@@ -1,5 +1,5 @@
 <div id="home">
-    <div id="homepage_bot">
+    {{!-- <div id="homepage_bot">
         <iframe id="botkit_client" src="/chat.html"></iframe>
     </div>
 
@@ -9,9 +9,12 @@
         <p><a href="/embed">Embed me in a web site</a></p>
         <p><a href="https://github.com/howdyai/botkit-starter-web">Starter Kit Documentation</a></p>
         <p><a href="https://botkit.ai/docs">Botkit SDK Documentation</a></p>
-    </div>
+    </div> --}}
 </div>
 <script src="/embed.js"></script>
 <script>
   Botkit.boot({});
+</script>
+<script>
+    window.location = "/chat.html";
 </script>
