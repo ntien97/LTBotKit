@@ -282,23 +282,30 @@ var Botkit = {
     console.log(message)
     if (message.graph) {
       var graph = message.graph;
-      const REALESTATE_ATTR = ['surounding', 'realestate_type', 'orientation', 'legal', 'position', 'surrounding_characteristic', 'transaction_type', 'interior_floor', 'interior_room']
-      const REALESTATE_ENTITY = ['area', 'potential', 'price', 'location']
+      const REALESTATE_ATTR = ['interior_room','position', 'surrounding_characteristics','interior_floor',  'surrounding_place', 'realestate_type', 'orientation', 'legal',  'transaction_type']
+      const REALESTATE_ENTITY = ['price', 'potential', 'area', 'location']
       const LOCATION_ATTR = ['addr_street', 'addr_ward', 'addr_city', 'addr_district']
+      var needActivate = [];
+      var needDeactivate = [];
       for (i = 0; i < REALESTATE_ATTR.length; i++) {
         (function (key) {
           var id = "#" + key;
           if (graph[key] && graph[key]["value_raw"] && graph[key]["value_raw"].length > 0) {
-            var text = "Value: " + graph[key]["value_raw"][0];
+            var text = graph[key]["value_raw"][0];
             for (var i = 1; i < graph[key]["value_raw"].length; i++) {
               text += ", " + graph[key]["value_raw"][i];
             }
             $($(id).find(".content")[0]).text(text);
+            $($(id).find(".content")[0]).show();
             $(id).css('opacity', '1');
+
+            needActivate.push(key);
           } else {
             console.log($(id).find(".content"))
             $($(id).find(".content")[0]).text("");
+            $($(id).find(".content")[0]).hide();
             $(id).css('opacity', '0.5');
+            needDeactivate.push(key);
           }
         })(REALESTATE_ATTR[i])
       }
@@ -306,15 +313,19 @@ var Botkit = {
         (function (key) {
           var id = "#" + key;
           if (graph[key] && graph[key]["value_raw"] && graph[key]["value_raw"].length > 0) {
-            var text = "Value: " + graph[key]["value_raw"][0];
+            var text = graph[key]["value_raw"][0];
             for (var i = 1; i < graph[key]["value_raw"].length; i++) {
               text += ", " + graph[key]["value_raw"][i];
             }
             $($(id).find(".content")[0]).text(text);
+            $($(id).find(".content")[0]).show();
             $(id).css('opacity', '1');
+            needActivate.push(key);
           } else {
             $($(id).find(".content")[0]).text("");
+            $($(id).find(".content")[0]).hide();
             $(id).css('opacity', '0.5');
+            needDeactivate.push(key);
           }
         })(REALESTATE_ENTITY[i])
       }
@@ -325,23 +336,29 @@ var Botkit = {
           (function (key) {
             var id = "#" + key;
             if (graphLocation[key] && graphLocation[key]["value_raw"] && graphLocation[key]["value_raw"].length > 0) {
-              var text = "Value: " + graphLocation[key]["value_raw"][0];
+              var text = graphLocation[key]["value_raw"][0];
               for (var i = 1; i < graphLocation[key]["value_raw"].length; i++) {
                 text += ", " + graphLocation[key]["value_raw"][i];
               }
               $($(id).find(".content")[0]).text(text);
+              $($(id).find(".content")[0]).show();
               $(id).css('opacity', '1');
+              needActivate.push(key);
               locationOn = true;
             } else {
               $($(id).find(".content")[0]).text("");
+              $($(id).find(".content")[0]).hide();
               $(id).css('opacity', '0.5');
+              needDeactivate.push(key);
             }
           })(LOCATION_ATTR[i])
         }
         if (locationOn === true) {
           $("#location").css('opacity', '1');
+          needActivate.push("location");
         } else {
           $("#location").css('opacity', '0.5');
+          needDeactivate.push("location");
         }
       }
       if (graph.current_intents) {
@@ -350,12 +367,18 @@ var Botkit = {
             var id = "#" + key;
             $(id).css('opacity', '1');
             $(id).css('background', 'red');
-            var text = ""
-            if (key !== "real_estate") {
-              text = ((key === "addr_district") ? (graph["location"][key]["identifier"] ? graph["location"][key]["identifier"] : "") : (graph[key]["identifier"] ? graph[key]["identifier"] : ""));
-            }
 
-            $($(id).find(".content")[0]).text("Identifier: " + text);
+            if (key !== "real_estate") {
+              var text = ((key === "addr_district") ? (graph["location"][key]["identifier"] ? graph["location"][key]["identifier"] : "") : (graph[key]["identifier"] ? graph[key]["identifier"] : ""));
+              $($(id).find(".content")[0]).text(text);
+              $($(id).find(".content")[0]).show();
+              needActivate.push(key);
+            }
+            if (key === "addr_district") {
+              $("#location").css('opacity', '1');
+              $("#location").css('background', 'red');
+              needActivate.push("location");
+            }
           })(graph.current_intents[i])
         }
       } else {
@@ -365,16 +388,25 @@ var Botkit = {
             $(id).css('opacity', '.5');
             $(id).css('background', 'var(--entity-color)');
             $($(id).find(".content")[0]).text("");
+            $($(id).find(".content")[0]).hide();
+            needDeactivate.push(key);
           })(REALESTATE_ENTITY[i])
         }
         $("#real_estate").css('opacity', '.5');
         $("#real_estate").css('background', 'var(--entity-color)');
         $($("#real_estate").find(".content")[0]).text("");
+        $($("#real_estate").find(".content")[0]).hide();
         $("#addr_district").css('opacity', '.5');
         $("#addr_district").css('background', 'var(--entity-color)');
-        $($("#addr_district").find(".content")[0]).text("");
+        $($("#addr_district").find(".content")[0]).hide();
+        needDeactivate.push("addr_district");
       }
-      // return;
+      for (var i = 0; i < needDeactivate.length; i++) {
+        deactivateLine(needDeactivate[i]);
+      }
+      for (var i = 0; i < needActivate.length; i++) {
+        activateLine(needActivate[i]);
+      }
     }
     if (!message.show_results) {
       if (!message.attr_list) {
@@ -450,7 +482,7 @@ var Botkit = {
               var obj = message.intent_dict[key];
               if (showOptions === true) {
                 var txt = "";
-                if (obj.response && obj.value && obj.value.length > 0) {
+                if (obj.response && obj.value) {
                   txt += obj.response;
                 }
                 if (txt !== "") {

@@ -34,165 +34,192 @@
 </head>
 
 <body>
+  <div class="container-fluid">
+    <div class="row p-0">
+      <div class="d-none d-lg-flex col-lg-7 col-xl-8 p-0">
+        <div class="graph_name" id="switch_btn">Concerptual Graph</div>
+        <div class="graph-wrapper" id="whole_graph">
+          <!-- Top Four -->
+          <div class="entity" id="area">
+            <div class="name">Area</div>
+            <div class="content"></div>
+          </div>
+          <div class="entity" id="potential">
+            <div class="name">Potential</div>
+            <div class="content"></div>
+          </div>
+          <div class="entity" id="price">
+            <div class="name">Price</div>
+            <div class="content"></div>
+          </div>
+          <div class="entity" id="location">
+            <div class="name">Location</div>
+            <div class="content"></div>
+          </div>
+          <div id="top_four"></div>
+          <div id="top_four_location"></div>
+          <div id="top_four_three_left"></div>
+          <div id="top_four_price"></div>
+          <div id="top_four_potential"></div>
+          <div id="top_four_area"></div>
+          <!-- End Top Four -->
+          <div class="entity" id="real_estate">
+            <div class="name">Real Estate</div>
+            <div class="content"></div>
+          </div>
+          <!-- Bottom Four -->
+          <div id="bottom_four"></div>
+          <div id="bottom_four_position"></div>
+          <div id="bottom_four_interior_room"></div>
+          <div id="bottom_four_interior_floor"></div>
+          <div id="bottom_four_surrounding_characteristics"></div>
+          <div class="attribute" id="position">
+            <div class="name">Position</div>
+            <div class="content"></div>
+          </div>
+          <div class="attribute" id="surrounding_characteristics">
+            <div class="name">Surrounding Characteristic</div>
+            <div class="content"></div>
+          </div>
+          <div class="attribute" id="interior_floor">
+            <div class="name">Floor</div>
+            <div class="content"></div>
+          </div>
+          <div class="attribute" id="interior_room">
+            <div class="name">Room</div>
+            <div class="content"></div>
+          </div>
+          <!-- End Bottom Four -->
 
-  <div class="graph-wrapper">
-    <div class="entity" id="area">
-      <div class="name">Area</div>
-      <div class="content"></div>
-    </div>
-    <div class="entity" id="potential">
-      <div class="name">Potential</div>
-      <div class="content"></div>
-    </div>
-    <div class="entity" id="price">
-      <div class="name">Price</div>
-      <div class="content"></div>
-    </div>
-    <div class="entity" id="real_estate">
-      <div class="name">Real Estate</div>
-      <div class="content"></div>
-    </div>
-    <div class="attribute" id="surounding">
-      <div class="name">Surounding Place</div>
-      <div class="content"></div>
-    </div>
-    <div class="attribute" id="realestate_type">
-      <div class="name">Type</div>
-      <div class="content"></div>
-    </div>
-    <div class="attribute" id="orientation">
-      <div class="name">Orientation</div>
-      <div class="content"></div>
-    </div>
-    <div class="attribute" id="legal">
-      <div class="name">Legal</div>
-      <div class="content"></div>
-    </div>
-    <div class="attribute" id="position">
-      <div class="name">Position</div>
-      <div class="content"></div>
-    </div>
-    <div class="attribute" id="surrounding_characteristic">
-      <div class="name">Surrounding Characteristic</div>
-      <div class="content"></div>
-    </div>
-    <div class="attribute" id="transaction_type">
-      <div class="name">Transaction Type</div>
-      <div class="content"></div>
-    </div>
-    <div class="attribute" id="interior_floor">
-      <div class="name">floor</div>
-      <div class="content"></div>
-    </div>
-    <div class="attribute" id="interior_room">
-      <div class="name">Room</div>
-      <div class="content"></div>
+          <div class="attribute" id="transaction_type">
+            <div class="name">Transaction Type</div>
+            <div class="content"></div>
+          </div>
+          <div class="attribute" id="surrounding_place">
+            <div class="name">Surounding Place</div>
+            <div class="content"></div>
+          </div>
+          <div class="attribute" id="realestate_type">
+            <div class="name">Type</div>
+            <div class="content"></div>
+          </div>
+          <div class="attribute" id="orientation">
+            <div class="name">Orientation</div>
+            <div class="content"></div>
+          </div>
+          <div class="attribute" id="legal">
+            <div class="name">Legal</div>
+            <div class="content"></div>
+          </div>
+          <div class="entity" id="addr_district">
+            <div class="name">District</div>
+            <div class="content"></div>
+          </div>
+          <div class="attribute" id="addr_city">
+            <div class="name">City</div>
+            <div class="content"></div>
+          </div>
+          <div class="attribute" id="addr_street">
+            <div class="name">Street</div>
+            <div class="content"></div>
+          </div>
+          <div class="attribute" id="addr_ward">
+            <div class="name">Ward</div>
+            <div class="content"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-5 col-xl-4 p-0">
+        <div class="wrapper">
+
+          <div id="message_window">
+            <div class="header">
+              <span>
+                <img src="hcmut.png" class="avt">
+              </span>
+              <div class="name">rLeT BOT</div>
+            </div>
+            <div class="disconnected">
+              Disconnected... reconnecting!
+            </div>
+            <div class="offline">
+              Offline! Reload to reconnect.
+            </div>
+            <section>
+              <div id="message_list">
+                <div id="message_template">
+
+                  <div class="message {{message.type}}">
+                    {{#if message.isTyping}}
+                    <div class="typing-indicator">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                    {{/if}}
+                    {{{message.html}}}
+
+                    {{#if message.open_link}}
+                    <a href="{{{message.open_link}}}" target="_blank"
+                      class="button_message">{{#if message.link_title}}{{message.link_title}}{{else}}{{message.open_link}}{{/if}}</a>
+                    {{/if}}
+                  </div>
+                  {{#message.files}}
+                  <div class="file_attachment">
+                    {{#if image}}
+                    <img src="{{{url}}}" alt="{{{url}}}" />
+                    {{else}}
+                    <a href="{{{url}}}" title="{{{url}}}">{{{url}}}</a>
+                    {{/if}}
+                  </div>
+                  {{/message.files}}
+                </div>
+
+                <div id="message_slider_template">
+                  <div class="carousel-mask" id="mask-{{{message.resultSliderId}}}">
+                    <div class="carousel-items" id="wrapper-{{{message.resultSliderId}}}">
+                    </div>
+                  </div>
+                </div>
+
+                <div id="message_list_template">
+                  <div class="list-mask" id="list-mask-{{{message.attrListId}}}">
+                  </div>
+                </div>
+
+                <div id="message_intent_template">
+                  <div class="list-mask" id="intent-mask-{{{message.intentListId}}}">
+                  </div>
+                </div>
+            </section>
+            <div id="message_replies">
+            </div>
+            <footer>
+              <form id="form_mesg" onsubmit="Botkit.send(Botkit.input.value, event)">
+                <input type="text" autocomplete="off" id="messenger_input" placeholder="Type your message here"
+                  onkeyup="stoppedTyping()" />
+                <button type="submit" id="send_btn">
+                  <div class="send">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                      viewBox="0 0 24 24" xml:space="preserve" class="active" style="fill:var(--primary-color-disabled)"
+                      id="fill_btn">
+                      <path
+                        d="M22,11.7V12h-0.1c-0.1,1-17.7,9.5-18.8,9.1c-1.1-0.4,2.4-6.7,3-7.5C6.8,12.9,17.1,12,17.1,12H17c0,0,0-0.2,0-0.2c0,0,0,0,0,0c0-0.4-10.2-1-10.8-1.7c-0.6-0.7-4-7.1-3-7.5C4.3,2.1,22,10.5,22,11.7z">
+                      </path>
+                    </svg>
+                  </div>
+                </button>
+              </form>
+            </footer>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="entity" id="location">
-      <div class="name">Location</div>
-      <div class="content"></div>
-    </div>
-    <div class="entity" id="addr_district">
-      <div class="name">District</div>
-      <div class="content"></div>
-    </div>
-    <div class="attribute" id="addr_city">
-      <div class="name">City</div>
-      <div class="content"></div>
-    </div>
-    <div class="attribute" id="addr_street">
-      <div class="name">Street</div>
-      <div class="content"></div>
-    </div>
-    <div class="attribute" id="addr_ward">
-      <div class="name">Ward</div>
-      <div class="content"></div>
-    </div>
   </div>
 
-  <div class="wrapper">
 
-    <div id="message_window">
-      <div class="header">
-        <span>
-          <img src="hcmut.png" class="avt">
-        </span>
-        <div class="name">rLeT BOT</div>
-      </div>
-      <div class="disconnected">
-        Disconnected... reconnecting!
-      </div>
-      <div class="offline">
-        Offline! Reload to reconnect.
-      </div>
-      <section>
-        <div id="message_list">
-          <div id="message_template">
 
-            <div class="message {{message.type}}">
-              {{#if message.isTyping}}
-              <div class="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-              {{/if}}
-              {{{message.html}}}
-
-              {{#if message.open_link}}
-              <a href="{{{message.open_link}}}" target="_blank"
-                class="button_message">{{#if message.link_title}}{{message.link_title}}{{else}}{{message.open_link}}{{/if}}</a>
-              {{/if}}
-            </div>
-            {{#message.files}}
-            <div class="file_attachment">
-              {{#if image}}
-              <img src="{{{url}}}" alt="{{{url}}}" />
-              {{else}}
-              <a href="{{{url}}}" title="{{{url}}}">{{{url}}}</a>
-              {{/if}}
-            </div>
-            {{/message.files}}
-          </div>
-
-          <div id="message_slider_template">
-            <div class="carousel-mask" id="mask-{{{message.resultSliderId}}}">
-              <div class="carousel-items" id="wrapper-{{{message.resultSliderId}}}">
-              </div>
-            </div>
-          </div>
-
-          <div id="message_list_template">
-            <div class="list-mask" id="list-mask-{{{message.attrListId}}}">
-            </div>
-          </div>
-
-          <div id="message_intent_template">
-            <div class="list-mask" id="intent-mask-{{{message.intentListId}}}">
-            </div>
-          </div>
-      </section>
-      <div id="message_replies">
-      </div>
-      <footer>
-        <form id="form_mesg" onsubmit="Botkit.send(Botkit.input.value, event)">
-          <input type="text" autocomplete="off" id="messenger_input" placeholder="Type your message here"
-            onkeyup="stoppedTyping()" />
-          <button type="submit" id="send_btn">
-            <div class="send">
-              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"
-                xml:space="preserve" class="active" style="fill:var(--primary-color-disabled)" id="fill_btn">
-                <path
-                  d="M22,11.7V12h-0.1c-0.1,1-17.7,9.5-18.8,9.1c-1.1-0.4,2.4-6.7,3-7.5C6.8,12.9,17.1,12,17.1,12H17c0,0,0-0.2,0-0.2c0,0,0,0,0,0c0-0.4-10.2-1-10.8-1.7c-0.6-0.7-4-7.1-3-7.5C4.3,2.1,22,10.5,22,11.7z">
-                </path>
-              </svg>
-            </div>
-          </button>
-        </form>
-      </footer>
-    </div>
-  </div>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
     crossorigin="anonymous"></script>
@@ -217,39 +244,242 @@
   </script>
   <script src="leader-line.min.js"></script>
   <script type="text/javascript">
-    const REALESTATE_ATTR = ['surounding', 'realestate_type', 'orientation', 'legal', 'position', 'surrounding_characteristic', 'transaction_type', 'interior_floor', 'interior_room']
-    const REALESTATE_ENTITY = ['area', 'potential', 'price', 'location']
+    var graph_show = false;
+    $("#switch_btn").click(() => {
+      if (graph_show === false) {
+        $("#switch_btn").css("opacity", "1");
+        $("#whole_graph").css("opacity", "1");
+        $("body>svg").css("opacity", "1");
+      } else {
+        $("#switch_btn").css("opacity", ".5");
+        $("#whole_graph").css("opacity", "0");
+        $("body>svg").css("opacity", "0");
+      }
+      graph_show = !graph_show;
+
+    })
+
+    function activateLine(key) {
+      if (line_list[key]) {
+        if (key === "area") {
+          $("#top_four_area").css("top", "50px");
+        }
+        if (key === "potential") {
+          $("#top_four_potential").css("top", "130px");
+        }
+        if (key === "price") {
+          $("#top_four_price").css("top", "210px");
+        }
+        if (BOTTOM_FOUR_ATTR.indexOf(key) > -1) {
+          var offset = $("#" + key).width() / 2;
+          var id = "#bottom_four_" + key
+          var curLen = parseInt($("#" + key).css("left"));
+          curLen += offset
+          console.log(offset)
+          console.log($(id).css("left"))
+          console.log(curLen)
+          $(id).css("left", curLen + "px")
+
+        }
+        for (var i = 0; i < line_list[key].length; i++) {
+          (function (line) {
+            if (key === "area") console.log(myLine[line])
+            myLine[line].color = "var(--primary-color)"
+            myLine[line].size = 3
+            myLine[line].position()
+          })(line_list[key][i])
+        }
+      }
+    }
+    function deactivateLine(key) {
+      if (line_list[key]) {
+        if (key === "area") {
+          $("#top_four_area").css("top", "37.5px;");
+        }
+        if (key === "potential") {
+          $("#top_four_potential").css("top", "117.5px");
+        }
+        if (key === "price") {
+          $("#top_four_price").css("top", "197.5px");
+        }
+        if (BOTTOM_FOUR_ATTR.indexOf(key) > -1) {
+          var offset = $("#" + key).width() / 2;
+          var id = "#bottom_four_" + key
+          var curLen = parseInt($("#" + key).css("left"));
+          curLen += offset
+          console.log(offset)
+          console.log($(id).css("left"))
+          console.log(curLen)
+          $(id).css("left", curLen + "px")
+
+        }
+        for (var i = 0; i < line_list[key].length; i++) {
+          (function (line) {
+            myLine[line].color = "var(--primary-color-disabled)"
+            myLine[line].size = 2
+            myLine[line].position()
+          })(line_list[key][i])
+        }
+      }
+    }
     var myLine = {}
-    // for (var i = 0; i < REALESTATE_ATTR.length; i++) {
-    //   myLine[REALESTATE_ATTR[i]] = new LeaderLine({
-    //     start: document.getElementById('realestate'),
-    //     end: document.getElementById(REALESTATE_ATTR[i]),
-    //     path: 'straight',
-    //     size: 1,
-    //     color: "blue"
-    //   });
-    // }
-    // for (var i = 0; i < REALESTATE_ENTITY.length; i++) {
-    //   myLine[REALESTATE_ENTITY[i]] = new LeaderLine({
-    //     start: document.getElementById('realestate'),
-    //     end: document.getElementById(REALESTATE_ENTITY[i]),
-    //     path: 'grid',
-    //     size: 1,
-    //     color: "blue"
-    //   });
-    // }
-    // const LOCATION_ATTR = ['addr_street','addr_ward','addr_city','addr_district']
-    // for (var i = 0; i < LOCATION_ATTR.length; i++) {
-    //   myLine[LOCATION_ATTR[i]] = new LeaderLine({
-    //     start: document.getElementById('location'),
-    //     end: document.getElementById(LOCATION_ATTR[i]),
-    //     path: 'grid',
-    //     size: 1,
-    //     color: "blue"
-    //   });
-    // }
+    var line_list = {}
+    const TOP_FOUR_ATTR = ['price', 'location', 'potential', 'area']
+    myLine["top_four"] = new LeaderLine({
+      start: document.getElementById('real_estate'),
+      end: document.getElementById('top_four'),
+      path: 'straight',
+      size: 2,
+      color: "var(--primary-color-disabled)",
+      endPlug: 'behind'
+    });
+    myLine["top_four_location"] = new LeaderLine({
+      start: document.getElementById('top_four'),
+      end: document.getElementById('top_four_location'),
+      path: 'straight',
+      size: 2,
+      color: "var(--primary-color-disabled)",
+      endPlug: 'behind'
+    });
+    myLine["top_four_three_left"] = new LeaderLine({
+      start: document.getElementById('top_four'),
+      end: document.getElementById('top_four_three_left'),
+      path: 'straight',
+      size: 2,
+      color: "var(--primary-color-disabled)",
+      endPlug: 'behind'
+    });
+    myLine["top_four_price"] = new LeaderLine({
+      start: document.getElementById('top_four_three_left'),
+      end: document.getElementById('top_four_price'),
+      path: 'straight',
+      size: 2,
+      color: "var(--primary-color-disabled)",
+      endPlug: 'behind'
+    });
+    myLine["top_four_potential"] = new LeaderLine({
+      start: document.getElementById('top_four_price'),
+      end: document.getElementById('top_four_potential'),
+      path: 'straight',
+      size: 2,
+      color: "var(--primary-color-disabled)",
+      endPlug: 'behind'
+    });
+    myLine["top_four_area"] = new LeaderLine({
+      start: document.getElementById('top_four_potential'),
+      end: document.getElementById('top_four_area'),
+      path: 'straight',
+      size: 2,
+      color: "var(--primary-color-disabled)",
+      endPlug: 'behind'
+    });
+    for (var i = 0; i < TOP_FOUR_ATTR.length; i++) {
+      myLine[TOP_FOUR_ATTR[i]] = new LeaderLine({
+        start: document.getElementById('top_four_' + TOP_FOUR_ATTR[i]),
+        end: document.getElementById(TOP_FOUR_ATTR[i]),
+        path: 'straight',
+        size: 2,
+        color: "var(--primary-color-disabled)"
+      });
+      line_list[TOP_FOUR_ATTR[i]] = [];
+      line_list[TOP_FOUR_ATTR[i]].push("top_four");
+      if (TOP_FOUR_ATTR[i] != "location") line_list[TOP_FOUR_ATTR[i]].push("top_four_three_left");
+      line_list[TOP_FOUR_ATTR[i]].push("top_four_" + TOP_FOUR_ATTR[i]);
+      line_list[TOP_FOUR_ATTR[i]].push(TOP_FOUR_ATTR[i]);
+    }
+    line_list["potential"].push("top_four_price")
+    line_list["area"].push("top_four_price")
+    line_list["area"].push("top_four_potential")
 
+    const BOTTOM_FOUR_ATTR = ['position', 'interior_room', 'interior_floor', 'surrounding_characteristics']
+    myLine["bottom_four"] = new LeaderLine({
+      start: document.getElementById('real_estate'),
+      end: document.getElementById('bottom_four'),
+      path: 'straight',
+      size: 2,
+      color: "var(--primary-color-disabled)",
+      endPlug: 'behind'
+    });
+    myLine["bottom_four_interior_room"] = new LeaderLine({
+      start: document.getElementById('bottom_four'),
+      end: document.getElementById('bottom_four_interior_room'),
+      path: 'straight',
+      size: 2,
+      color: "var(--primary-color-disabled)",
+      endPlug: 'behind'
+    });
+    myLine["bottom_four_position"] = new LeaderLine({
+      start: document.getElementById('bottom_four_interior_room'),
+      end: document.getElementById('bottom_four_position'),
+      path: 'straight',
+      size: 2,
+      color: "var(--primary-color-disabled)",
+      endPlug: 'behind'
+    });
+    myLine["bottom_four_interior_floor"] = new LeaderLine({
+      start: document.getElementById('bottom_four'),
+      end: document.getElementById('bottom_four_interior_floor'),
+      path: 'straight',
+      size: 2,
+      color: "var(--primary-color-disabled)",
+      endPlug: 'behind'
+    });
+    myLine["bottom_four_surrounding_characteristics"] = new LeaderLine({
+      start: document.getElementById('bottom_four_interior_floor'),
+      end: document.getElementById('bottom_four_surrounding_characteristics'),
+      path: 'straight',
+      size: 2,
+      color: "var(--primary-color-disabled)",
+      endPlug: 'behind'
+    });
+    for (var i = 0; i < BOTTOM_FOUR_ATTR.length; i++) {
+      myLine[BOTTOM_FOUR_ATTR[i]] = new LeaderLine({
+        start: document.getElementById('bottom_four_' + BOTTOM_FOUR_ATTR[i]),
+        end: document.getElementById(BOTTOM_FOUR_ATTR[i]),
+        path: 'straight',
+        size: 2,
+        color: "var(--primary-color-disabled)"
+      });
+      line_list[BOTTOM_FOUR_ATTR[i]] = [];
+      line_list[BOTTOM_FOUR_ATTR[i]].push("bottom_four");
+      line_list[BOTTOM_FOUR_ATTR[i]].push("bottom_four_" + BOTTOM_FOUR_ATTR[i]);
+      line_list[BOTTOM_FOUR_ATTR[i]].push(BOTTOM_FOUR_ATTR[i]);
+    }
+    line_list["position"].push("bottom_four_interior_room")
+    line_list["surrounding_characteristics"].push("bottom_four_interior_floor")
 
+    const FIVE_ATTR = ['realestate_type', 'orientation', 'legal', 'transaction_type', 'surrounding_place']
+    for (var i = 0; i < FIVE_ATTR.length; i++) {
+      myLine[FIVE_ATTR[i]] = new LeaderLine({
+        start: document.getElementById('real_estate'),
+        end: document.getElementById(FIVE_ATTR[i]),
+        path: 'straight',
+        size: 2,
+        color: "var(--primary-color-disabled)"
+      });
+      line_list[FIVE_ATTR[i]] = [];
+      line_list[FIVE_ATTR[i]].push(FIVE_ATTR[i]);
+    }
+    const LOCATION_ATTR = ['addr_ward', 'addr_city', 'addr_district', 'addr_street']
+    for (var i = 0; i < LOCATION_ATTR.length; i++) {
+      myLine[LOCATION_ATTR[i]] = new LeaderLine({
+        start: document.getElementById('location'),
+        end: document.getElementById(LOCATION_ATTR[i]),
+        path: 'straight',
+        size: 2,
+        color: "var(--primary-color-disabled)"
+      });
+      line_list[LOCATION_ATTR[i]] = [];
+      line_list[LOCATION_ATTR[i]].push(LOCATION_ATTR[i]);
+    }
+    for (var key in myLine) {
+      if (!myLine.hasOwnProperty(key)) continue;
+      var obj = myLine[key];
+      obj.position();
+    }
+    if (graph_show === false) {
+      $("body>svg").css("opacity", "0.0")
+    }
   </script>
   <script src="client.js"></script>
 </body>

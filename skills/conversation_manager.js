@@ -1,7 +1,7 @@
 resp = require("../response/response.js");
 request = require("request");
 
-const CONVERSATION_MANAGER_ENDPOINT = "https://6c230c9b.ngrok.io/api/LT-conversation-manager"
+const CONVERSATION_MANAGER_ENDPOINT = "http://d412564d.ngrok.io/api/LT-conversation-manager"
 
 const ATTR_LIST = ["interior_floor", "interior_room", "legal", "orientation", "position", "realestate_type", "surrounding_characteristics", "surrounding_place", "transaction_type"];
 const ENTITY_LIST = ["area", "location", "potential", "price", "addr_district"]
