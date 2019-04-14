@@ -1238,6 +1238,7 @@ td {
   border-radius: 50px;
   background: #E9EAEE;
   border: 1px transparent solid;
+  text-align: center;
 }
 #credit span:hover{
   background: linear-gradient(90deg, rgba(228, 151, 103, 1) 16%, rgba(240, 97, 144, 1) 100%)!important;
@@ -1245,9 +1246,11 @@ td {
   font-weight: 600;
 }
 #nhat {
+  width: 190px;
   top: 20px;
 }
 #nhl{
+  width: 190px;
   bottom: 20px;
 }
 #svth {
