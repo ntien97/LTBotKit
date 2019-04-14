@@ -27,6 +27,9 @@
   <div class="container-fluid h-100">
     <div class="row p-0 h-100">
       <div class="d-none d-lg-block col-lg-7 col-xl-8 p-0">
+        <div class="cnt-name" id="cnt-name">
+          Hệ thống tư vấn bất động sản tự động
+        </div>
         <div class="graph_name" id="switch_btn">Conceptual Graph</div>
         <div class="cards">
           <div class="card_info" id="info">
@@ -34,21 +37,51 @@
               <div class="text-bot-1">
                 Xin chào! 👋 Tôi có thể giúp gì được bạn?
               </div>
-              <div class="text-user n1">
+              <div class="text-user n1" id="n1">
                 Tôi muốn mua nhà ở quận 3.
               </div>
-              <div class="text-bot b1">
+              <div class="text-bot b1" id="b1">
                 Đây là một số nhà ở quận 3 phù hợp với yêu cầu của bạn.
+              </div>
+              <div class="text-user n2" id="n2">
+                Mua nhà mặt tiền ở quận 1 thì cần bao nhiêu tiền?
+              </div>
+              <div class="text-bot b2" id="b2">
+                Nhà mặt tiền ở quận 1 thì có giá khoảng ...
+              </div>
+              <div class="text-user n3" id="n3">
+                Với 3 tỷ thì tôi mua được đất rộng cỡ bao nhiêu?
+              </div>
+              <div class="text-bot b3" id="b3">
+                Với mức đầu tư đó bạn có thể mua đất rộng cỡ ...
+              </div>
+              <div class="text-user n4" id="n4">
+                Nhà ở quận 2 thì có tiềm năng gì?
+              </div>
+              <div class="text-bot b4" id="b4">
+                Nhà ở khu vực này có các tiềm năng như ...
+              </div>
+              <div class="text-user n5" id="n5">
+                Thuê phòng với giá 2 triệu / tháng thì nên tìm ở đâu?
+              </div>
+              <div class="text-bot b5" id="b5">
+                Bạn có thể thử tìm phòng ở quận ...
               </div>
             </div>
             <div class="bg"></div>
           </div>
           <div class="card_info" id="credit">
-            <div class="cnt-name">
-              Hệ thống tư vấn bất động sản tự động
+            <img src="hcmuttrans.png" width="40px" height="40px" class="logobk">
+            <div class="bk-name">
+              Đại học Bách Khoa - ĐHQG TP.HCM <br>
+              Khoa KH & KT Máy Tính
             </div>
-            Chúng tôi cung cấp nền tảng tư vấn tự động cho các giao dịch bất động sản ở Hà Nội và TP.HCM với các tính
-            năng tiêu biểu. Ba
+            <div class="thay-tho">
+              GVHD: &nbsp; PGS. TS. Quản Thành Thơ​
+            </div>
+            <span id="svth" class="d-none d-xl-block">SVTH: </span>
+            <a href="mailto:1513448@hcmut.edu.vn" target="_blank"><span id="nhat">Nguyễn Hữu Anh Tiến</span></a>
+            <a href="mailto:1511849@hcmut.edu.vn" target="_blank"><span id="nhl">Nguyễn Hoàng Lộc</span></a>
           </div>
         </div>
         <div class="graph-wrapper" id="whole_graph">
@@ -257,22 +290,31 @@
   </script>
   <script src="leader-line.min.js"></script>
   <script type="text/javascript">
+    setTimeout(() => { $("#n1").hide() }, 6900)
+    setTimeout(() => { $("#b1").hide() }, 6900)
 
+    setTimeout(() => { $("#n2").hide() }, 11900)
+    setTimeout(() => { $("#b2").hide() }, 11900)
 
+    setTimeout(() => { $("#n3").hide() }, 16900)
+    setTimeout(() => { $("#b3").hide() }, 16900)
 
+    setTimeout(() => { $("#n4").hide() }, 21900)
+    setTimeout(() => { $("#b4").hide() }, 21900)
 
     var graph_show = false;
     $("#switch_btn").click(() => {
       if (graph_show === false) {
         $(".cards").hide();
+        $("#cnt-name").hide();
         $("#switch_btn").css("opacity", "1");
         $("#whole_graph").css("opacity", "1");
         $("body>svg").css("opacity", "1");
       } else {
         setTimeout(() => {
           $(".cards").show();
+          $("#cnt-name").show();
         }, 500)
-
         $("#switch_btn").css("opacity", ".5");
         $("#whole_graph").css("opacity", "0");
         $("body>svg").css("opacity", "0");
