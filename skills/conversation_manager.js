@@ -284,6 +284,14 @@ module.exports = function (controller) {
                     message: raw_mesg
                 }
             }, (error, res, body) => {
+                if (error) {
+                    console.log(error);
+                    bot.reply(message, {
+                        graph: {},
+                        text: resp.err
+                    })
+                    return 
+                }
                 requestGET()
             })
         } else {
