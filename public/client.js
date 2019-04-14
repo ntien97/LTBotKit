@@ -407,6 +407,11 @@ var Botkit = {
       for (var i = 0; i < needActivate.length; i++) {
         activateLine(needActivate[i]);
       }
+      for (var key in myLine) {
+        if (!myLine.hasOwnProperty(key)) continue;
+        var obj = myLine[key];
+        obj.position();
+      }
     }
     if (!message.show_results) {
       if (!message.attr_list) {
