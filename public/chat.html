@@ -5,7 +5,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
   <link rel="apple-touch-icon" sizes="57x57" href="icon/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="icon/apple-icon-60x60.png">
   <link rel="apple-touch-icon" sizes="72x72" href="icon/apple-icon-72x72.png">
@@ -36,8 +36,31 @@
 <body>
   <div class="container-fluid">
     <div class="row p-0">
-      <div class="d-none d-lg-flex col-lg-7 col-xl-8 p-0">
+      <div class="d-none d-lg-block col-lg-7 col-xl-8 p-0">
         <div class="graph_name" id="switch_btn">Concerptual Graph</div>
+        <div class="cards">
+          <div class="card_info" id="info">
+            <div class="cnt">
+              <div class="text-bot-1">
+                Xin chào! 👋 Tôi có thể giúp gì được bạn?
+              </div>
+              <div class="text-user n1">
+                Tôi muốn mua nhà ở quận 3.
+              </div>
+              <div class="text-bot b1">
+                Đây là một số nhà ở quận 3 phù hợp với yêu cầu của bạn.
+              </div>
+            </div>
+            <div class="bg"></div>
+          </div>
+          <div class="card_info" id="credit">
+            <div class="cnt-name">
+              Hệ thống tư vấn bất động sản tự động
+            </div>
+            Chúng tôi cung cấp nền tảng tư vấn tự động cho các giao dịch bất động sản ở Hà Nội và TP.HCM với các tính
+            năng tiêu biểu. Ba
+          </div>
+        </div>
         <div class="graph-wrapper" id="whole_graph">
           <!-- Top Four -->
           <div class="entity" id="area">
@@ -244,13 +267,22 @@
   </script>
   <script src="leader-line.min.js"></script>
   <script type="text/javascript">
+
+
+
+
     var graph_show = false;
     $("#switch_btn").click(() => {
       if (graph_show === false) {
+        $(".cards").hide();
         $("#switch_btn").css("opacity", "1");
         $("#whole_graph").css("opacity", "1");
         $("body>svg").css("opacity", "1");
       } else {
+        setTimeout(() => {
+          $(".cards").show();
+        }, 500)
+
         $("#switch_btn").css("opacity", ".5");
         $("#whole_graph").css("opacity", "0");
         $("body>svg").css("opacity", "0");
