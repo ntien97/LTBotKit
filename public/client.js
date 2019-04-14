@@ -36,6 +36,7 @@ var Botkit = {
   reconnect_count: 0,
   slider_message_count: 0,
   list_attr_count: 0,
+  list_intent_count: 0,
   guid: null,
   current_user: null,
   on: function (event, handler) {
@@ -93,6 +94,35 @@ var Botkit = {
     that.renderMessage(message);
 
     that.deliverMessage({
+      type: 'message',
+      text: text,
+      user: this.guid,
+      channel: this.options.use_sockets ? 'socket' : 'webhook'
+    });
+
+    this.input.value = '';
+
+    this.trigger('sent', message);
+
+    return false;
+  },
+  sendCustom: function (text, payload, e) {
+    console.log("here")
+    var that = this;
+    if (e) e.preventDefault();
+    if (!text) {
+      return;
+    }
+    var message = {
+      type: 'outgoing',
+      text: text
+    };
+
+    this.clearReplies();
+    that.renderMessage(message);
+
+    that.deliverMessage({
+      ...payload,
       type: 'message',
       text: text,
       user: this.guid,
@@ -250,21 +280,290 @@ var Botkit = {
   renderMessage: function (message) {
     var that = this;
     console.log(message)
+    if (message.graph) {
+      var graph = message.graph;
+      const REALESTATE_ATTR = ['surounding', 'realestate_type', 'orientation', 'legal', 'position', 'surrounding_characteristic', 'transaction_type', 'interior_floor', 'interior_room']
+      const REALESTATE_ENTITY = ['area', 'potential', 'price', 'location']
+      const LOCATION_ATTR = ['addr_street', 'addr_ward', 'addr_city', 'addr_district']
+      for (i = 0; i < REALESTATE_ATTR.length; i++) {
+        (function (key) {
+          var id = "#" + key;
+          if (graph[key] && graph[key]["value_raw"] && graph[key]["value_raw"].length > 0) {
+            var text = "Value: " + graph[key]["value_raw"][0];
+            for (var i = 1; i < graph[key]["value_raw"].length; i++) {
+              text += ", " + graph[key]["value_raw"][i];
+            }
+            $($(id).find(".content")[0]).text(text);
+            $(id).css('opacity', '1');
+          } else {
+            console.log($(id).find(".content"))
+            $($(id).find(".content")[0]).text("");
+            $(id).css('opacity', '0.5');
+          }
+        })(REALESTATE_ATTR[i])
+      }
+      for (i = 0; i < REALESTATE_ENTITY.length; i++) {
+        (function (key) {
+          var id = "#" + key;
+          if (graph[key] && graph[key]["value_raw"] && graph[key]["value_raw"].length > 0) {
+            var text = "Value: " + graph[key]["value_raw"][0];
+            for (var i = 1; i < graph[key]["value_raw"].length; i++) {
+              text += ", " + graph[key]["value_raw"][i];
+            }
+            $($(id).find(".content")[0]).text(text);
+            $(id).css('opacity', '1');
+          } else {
+            $($(id).find(".content")[0]).text("");
+            $(id).css('opacity', '0.5');
+          }
+        })(REALESTATE_ENTITY[i])
+      }
+      var locationOn = false;
+      graphLocation = graph["location"]
+      if (graphLocation) {
+        for (i = 0; i < LOCATION_ATTR.length; i++) {
+          (function (key) {
+            var id = "#" + key;
+            if (graphLocation[key] && graphLocation[key]["value_raw"] && graphLocation[key]["value_raw"].length > 0) {
+              var text = "Value: " + graphLocation[key]["value_raw"][0];
+              for (var i = 1; i < graphLocation[key]["value_raw"].length; i++) {
+                text += ", " + graphLocation[key]["value_raw"][i];
+              }
+              $($(id).find(".content")[0]).text(text);
+              $(id).css('opacity', '1');
+              locationOn = true;
+            } else {
+              $($(id).find(".content")[0]).text("");
+              $(id).css('opacity', '0.5');
+            }
+          })(LOCATION_ATTR[i])
+        }
+        if (locationOn === true) {
+          $("#location").css('opacity', '1');
+        } else {
+          $("#location").css('opacity', '0.5');
+        }
+      }
+      if (graph.current_intents) {
+        for (var i = 0; i < graph.current_intents.length; i++) {
+          (function (key) {
+            var id = "#" + key;
+            $(id).css('opacity', '1');
+            $(id).css('background', 'red');
+            var text = ""
+            if (key !== "real_estate") {
+              text = ((key === "addr_district") ? (graph["location"][key]["identifier"] ? graph["location"][key]["identifier"] : "") : (graph[key]["identifier"] ? graph[key]["identifier"] : ""));
+            }
+
+            $($(id).find(".content")[0]).text("Identifier: " + text);
+          })(graph.current_intents[i])
+        }
+      } else {
+        for (var i = 0; i < REALESTATE_ENTITY.length; i++) {
+          (function (key) {
+            var id = "#" + key;
+            $(id).css('opacity', '.5');
+            $(id).css('background', 'var(--entity-color)');
+            $($(id).find(".content")[0]).text("");
+          })(REALESTATE_ENTITY[i])
+        }
+        $("#real_estate").css('opacity', '.5');
+        $("#real_estate").css('background', 'var(--entity-color)');
+        $($("#real_estate").find(".content")[0]).text("");
+        $("#addr_district").css('opacity', '.5');
+        $("#addr_district").css('background', 'var(--entity-color)');
+        $($("#addr_district").find(".content")[0]).text("");
+      }
+      // return;
+    }
     if (!message.show_results) {
       if (!message.attr_list) {
-        if (!that.next_line) {
-          that.next_line = document.createElement('div');
-          that.message_list.appendChild(that.next_line);
-        }
-        if (message.text) {
-          message.html = converter.makeHtml(message.text);
-        }
+        if (!message.intent_dict) {
+          if (!that.next_line) {
+            that.next_line = document.createElement('div');
+            that.message_list.appendChild(that.next_line);
+          }
+          if (message.text) {
+            message.html = converter.makeHtml(message.text);
+          }
 
-        that.next_line.innerHTML = that.message_template({
-          message: message
-        });
-        if (!message.isTyping) {
-          delete (that.next_line);
+          that.next_line.innerHTML = that.message_template({
+            message: message
+          });
+          if (!message.isTyping) {
+            delete (that.next_line);
+          }
+        } else {
+          if (!that.next_line) {
+            that.next_line = document.createElement('div');
+            that.message_list.appendChild(that.next_line);
+          }
+          if (message.intent_dict) {
+            message.intentListId = this.list_intent_count;
+            this.list_intent_count += 1;
+          }
+          that.next_line.innerHTML = that.message_intent_template({
+            message: message
+          });
+          if (message.intent_dict) {
+            console.log(message.intent_dict)
+            var count = 0;
+            if (message.intent_dict["location"]) count += 1;
+            if (message.intent_dict["addr_district"]) count += 1;
+            if (message.intent_dict["potential"]) count += 1;
+            var showOptions = true;
+            if (count > 1) showOptions = false;
+            var filler = document.getElementById("intent-mask-" + message.intentListId);
+
+            console.log(filler);
+
+            if (message.intent_dict["price"]) {
+              var txt = "";
+              var obj = message.intent_dict["price"];
+              if (obj.response && obj.value && obj.value.length > 0) {
+                txt += obj.response + " " + obj.value[0];
+              }
+              if (txt !== "") {
+                var t = $(`<div class="message-text">${txt}</div>`)[0];
+                filler.appendChild(t);
+              }
+            }
+            if (message.intent_dict["area"]) {
+              var txt = "";
+              var obj = message.intent_dict["area"];
+              if (obj.response && obj.value && obj.value.length > 0) {
+                txt += obj.response + " " + obj.value[0];
+              }
+              if (txt !== "") {
+                var t = $(`<div class="message-text">${txt}</div>`)[0];
+                filler.appendChild(t);
+              }
+            }
+
+            for (var key in message.intent_dict) {
+              // skip loop if the property is from prototype
+              if (!message.intent_dict.hasOwnProperty(key)) continue;
+              if (key === "price" || key == "area") {
+                continue;
+              }
+
+              var obj = message.intent_dict[key];
+              if (showOptions === true) {
+                var txt = "";
+                if (obj.response && obj.value && obj.value.length > 0) {
+                  txt += obj.response;
+                }
+                if (txt !== "") {
+                  var t = $(`<div class="message-text">${txt}</div>`)[0];
+                  filler.appendChild(t);
+                } else {
+                  continue;
+                }
+                for (var i = 0; i < obj.value.length; i++) {
+                  (function (ele) {
+                    var li = $(`<div class="attr" lt-key="${key}">${ele}</div>`)[0];
+                    $(li).click(() => {
+                      var key = $(li).attr("lt-key");
+                      var value = $(li).text()
+
+                      var anotherThat = that;
+
+                      var response = "Xem kết quả với " + key2vn[key] + ": \"" + value.trim() + "\"";
+                      var message = {
+                        type: 'outgoing',
+                        text: response
+                      };
+                      // console.log(that)
+                      that.clearReplies();
+                      anotherThat.renderMessage(message);
+
+                      anotherThat.deliverMessage({
+                        type: 'message',
+                        filterAttr: { value: encodeURI(value), key: key },
+                        user: that.guid,
+                        channel: that.options.use_sockets ? 'socket' : 'webhook'
+                      });
+
+                      that.input.value = '';
+
+                      that.trigger('sent', message);
+
+                      console.log($($(li).parent()[0]).find(".attr"))
+                      $($(li).parent()[0]).find(".attr").remove();
+                      return false;
+                    })
+                    filler.appendChild(li);
+
+                  })(obj.value[i])
+                }
+              } else {
+                var txt = "";
+                if (obj.response && obj.value && obj.value.length > 0) {
+                  txt += obj.response + " ";
+                  for (var i = 0; i < obj.value.length; i++) {
+                    txt += obj.value[i] + ", "
+                  }
+                }
+                if (txt !== "") {
+                  var t = $(`<div class="message-text">${txt}</div>`)[0];
+                  filler.appendChild(t);
+                } else {
+                  continue;
+                }
+              }
+
+            }
+
+            for (var i = 0; i < message.intent_dict.length; i++) {
+              (function (ele) {
+                var li = $(`<div class="attr" lt-key="${ele.key}">${ele.value}<span class="close">${close}</span>
+                </div>`)[0]
+                $(li).click(() => {
+
+                  var key = $(li).attr("lt-key");
+                  if (key == "location") {
+                    key = "addr_district";
+                  }
+                  var value = $(li).text()
+
+                  var anotherThat = that;
+
+                  var response = "Bỏ yêu cầu \"" + value.trim() + "\"";
+                  var message = {
+                    type: 'outgoing',
+                    text: response
+                  };
+                  // console.log(that)
+                  that.clearReplies();
+                  anotherThat.renderMessage(message);
+
+                  anotherThat.deliverMessage({
+                    type: 'message',
+                    clearAttr: { value: value, key: key },
+                    user: that.guid,
+                    channel: that.options.use_sockets ? 'socket' : 'webhook'
+                  });
+
+                  that.input.value = '';
+
+                  that.trigger('sent', message);
+
+                  console.log($($(li).parent()[0]).find(".attr"))
+                  $($(li).parent()[0]).find(".attr").remove();
+                  return false;
+
+                })
+                filler.appendChild(li);
+              })(message.intent_dict[i])
+            }
+          }
+          if (message.text) {
+            var t = $(`<div class="message-text">${message.text}</div>`)[0];
+            filler.appendChild(t);
+          }
+          if (!message.isTyping) {
+            delete (that.next_line);
+          }
         }
       }
       else {
@@ -292,8 +591,37 @@ var Botkit = {
             (function (ele) {
               var li = $(`<div class="attr" lt-key="${ele.key}">${ele.value}<span class="close">${close}</span>
               </div>`)[0]
-              $(li).click(()=>{
-                var key = console.log($(li).attr("lt-key"))
+              $(li).click(() => {
+
+                var key = $(li).attr("lt-key");
+                var value = $(li).text()
+
+                var anotherThat = that;
+
+                var response = "Bỏ yêu cầu \"" + value.trim() + "\"";
+                var message = {
+                  type: 'outgoing',
+                  text: response
+                };
+                // console.log(that)
+                that.clearReplies();
+                anotherThat.renderMessage(message);
+
+                anotherThat.deliverMessage({
+                  type: 'message',
+                  clearAttr: { value: value, key: key },
+                  user: that.guid,
+                  channel: that.options.use_sockets ? 'socket' : 'webhook'
+                });
+
+                that.input.value = '';
+
+                that.trigger('sent', message);
+
+                console.log($($(li).parent()[0]).find(".attr"))
+                $($(li).parent()[0]).find(".attr").remove();
+                return false;
+
               })
               filler.appendChild(li);
             })(message.attr_list[i])
@@ -318,6 +646,15 @@ var Botkit = {
       });
       if (message.show_results) {
         var list = this.renderResultMessages(message.show_results, message.concerned_attributes);
+
+        if (message.text) {
+          var parentDiv = $(`#mask-${message.resultSliderId}`).parent()[0]
+          console.log(parentDiv);
+          var t = $(`<div class="message-text-slider">${message.text[0]}</div>`)[0];
+          var u = $(`<div class="message-text-slider">${message.text[1]}</div>`)[0];
+          parentDiv.prepend(t);
+          parentDiv.append(u);
+        }
         var sliderContainer = document.getElementById(`wrapper-${message.resultSliderId}`);
         list.forEach(function (element) {
           sliderContainer.appendChild(element);
@@ -453,7 +790,8 @@ var Botkit = {
   },
   renderResultMessages: function (results, concerned_attributes) {
     var elements = [];
-    for (var r = 0; r < results.length; r++) {
+    var len = Math.min(10, results.length);
+    for (var r = 0; r < len; r++) {
       (function (result) {
 
         // var li = document.createElement('div');
@@ -469,6 +807,9 @@ var Botkit = {
         for (var i = 0; i < concerned_attributes.length; i++)
           if (result[concerned_attributes[i]] && count < MAX_ATTR) {
             if (concerned_attributes[i] === "orientation" & result[concerned_attributes[i]] === "Không xác định") {
+              continue;
+            }
+            if (concerned_attributes[i] === "addr_district" || concerned_attributes[i] === "potential") {
               continue;
             }
             count += 1;
@@ -505,6 +846,9 @@ var Botkit = {
 
     var custom_source_2 = document.getElementById('message_list_template').innerHTML;
     that.message_list_template = Handlebars.compile(custom_source_2);
+
+    var custom_source_3 = document.getElementById('message_intent_template').innerHTML;
+    that.message_intent_template = Handlebars.compile(custom_source_3);
 
     that.replies = document.getElementById('message_replies');
 
@@ -590,6 +934,54 @@ var Botkit = {
             elements.push(li);
 
           })(message.quick_replies[r]);
+        }
+
+        that.replies.appendChild(list);
+
+        // uncomment this code if you want your quick replies to scroll horizontally instead of stacking
+        // var width = 0;
+        // // resize this element so it will scroll horizontally
+        // for (var e = 0; e < elements.length; e++) {
+        //     width = width + elements[e].offsetWidth + 18;
+        // }
+        // list.style.width = width + 'px';
+
+        if (message.disable_input) {
+          that.input.disabled = true;
+        } else {
+          that.input.disabled = false;
+        }
+      } else {
+        that.input.disabled = false;
+      }
+    });
+
+    that.on('message', function (message) {
+      that.clearReplies();
+      if (message.force_result) {
+
+        var list = document.createElement('ul');
+
+        var elements = [];
+        for (var r = 0; r < message.force_result.length; r++) {
+          (function (reply) {
+
+            var li = document.createElement('li');
+            var el = document.createElement('a');
+            el.innerHTML = reply.title;
+            el.href = '#';
+
+            el.onclick = function () {
+
+              console.log(reply.title, reply.payload);
+              that.sendCustom(reply.title, reply.payload);
+            }
+
+            li.appendChild(el);
+            list.appendChild(li);
+            elements.push(li);
+
+          })(message.force_result[r]);
         }
 
         that.replies.appendChild(list);

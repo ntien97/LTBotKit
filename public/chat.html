@@ -1,11 +1,28 @@
 <html>
 
 <head>
-  <title>Botkit Anywhere</title>
+  <title>rLeT BOT</title>
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+  <link rel="apple-touch-icon" sizes="57x57" href="icon/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="icon/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="icon/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="icon/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="icon/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="icon/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="icon/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icon/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="icon/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
+  <link rel="manifest" href="icon/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="icon/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -17,6 +34,83 @@
 </head>
 
 <body>
+
+  <div class="graph-wrapper">
+    <div class="entity" id="area">
+      <div class="name">Area</div>
+      <div class="content"></div>
+    </div>
+    <div class="entity" id="potential">
+      <div class="name">Potential</div>
+      <div class="content"></div>
+    </div>
+    <div class="entity" id="price">
+      <div class="name">Price</div>
+      <div class="content"></div>
+    </div>
+    <div class="entity" id="real_estate">
+      <div class="name">Real Estate</div>
+      <div class="content"></div>
+    </div>
+    <div class="attribute" id="surounding">
+      <div class="name">Surounding Place</div>
+      <div class="content"></div>
+    </div>
+    <div class="attribute" id="realestate_type">
+      <div class="name">Type</div>
+      <div class="content"></div>
+    </div>
+    <div class="attribute" id="orientation">
+      <div class="name">Orientation</div>
+      <div class="content"></div>
+    </div>
+    <div class="attribute" id="legal">
+      <div class="name">Legal</div>
+      <div class="content"></div>
+    </div>
+    <div class="attribute" id="position">
+      <div class="name">Position</div>
+      <div class="content"></div>
+    </div>
+    <div class="attribute" id="surrounding_characteristic">
+      <div class="name">Surrounding Characteristic</div>
+      <div class="content"></div>
+    </div>
+    <div class="attribute" id="transaction_type">
+      <div class="name">Transaction Type</div>
+      <div class="content"></div>
+    </div>
+    <div class="attribute" id="interior_floor">
+      <div class="name">floor</div>
+      <div class="content"></div>
+    </div>
+    <div class="attribute" id="interior_room">
+      <div class="name">Room</div>
+      <div class="content"></div>
+    </div>
+
+    <div class="entity" id="location">
+      <div class="name">Location</div>
+      <div class="content"></div>
+    </div>
+    <div class="entity" id="addr_district">
+      <div class="name">District</div>
+      <div class="content"></div>
+    </div>
+    <div class="attribute" id="addr_city">
+      <div class="name">City</div>
+      <div class="content"></div>
+    </div>
+    <div class="attribute" id="addr_street">
+      <div class="name">Street</div>
+      <div class="content"></div>
+    </div>
+    <div class="attribute" id="addr_ward">
+      <div class="name">Ward</div>
+      <div class="content"></div>
+    </div>
+  </div>
+
   <div class="wrapper">
 
     <div id="message_window">
@@ -46,32 +140,6 @@
               {{/if}}
               {{{message.html}}}
 
-              {{#if message.show_results}}
-              <!-- <div id="{{{message.carouselId}}}" class="carousel slide carousel-fade" >
-                <div class="carousel-inner" id="filler-{{{message.carouselId}}}">
-
-                </div>
-                <a class="carousel-control-prev" href="#{{{message.carouselId}}}" role="button" data-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="sr-only">P</span>
-                </a>
-                <a class="carousel-control-next" href="#{{{message.carouselId}}}" role="button" data-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="sr-only">N</span>
-                </a>
-              </div> -->
-              <div class="result-slider" id="{{{message.resultSliderId}}}">
-              </div>
-              <ul class="controls" id="customize-controls-{{{message.resultSliderId}}}">
-                <li class="prev">
-                  <img src="angle-left.png" alt="">
-                </li>
-                <li class="next">
-                  <img src="angle-right.png" alt="">
-                </li>
-              </ul>
-              {{/if}}
-
               {{#if message.open_link}}
               <a href="{{{message.open_link}}}" target="_blank"
                 class="button_message">{{#if message.link_title}}{{message.link_title}}{{else}}{{message.open_link}}{{/if}}</a>
@@ -99,11 +167,16 @@
             <div class="list-mask" id="list-mask-{{{message.attrListId}}}">
             </div>
           </div>
+
+          <div id="message_intent_template">
+            <div class="list-mask" id="intent-mask-{{{message.intentListId}}}">
+            </div>
+          </div>
       </section>
       <div id="message_replies">
       </div>
       <footer>
-        <form onsubmit="Botkit.send(Botkit.input.value, event)">
+        <form id="form_mesg" onsubmit="Botkit.send(Botkit.input.value, event)">
           <input type="text" autocomplete="off" id="messenger_input" placeholder="Type your message here"
             onkeyup="stoppedTyping()" />
           <button type="submit" id="send_btn">
@@ -141,6 +214,42 @@
         $('#fill_btn').attr('style', "fill: var(--primary-color)");
       }
     }
+  </script>
+  <script src="leader-line.min.js"></script>
+  <script type="text/javascript">
+    const REALESTATE_ATTR = ['surounding', 'realestate_type', 'orientation', 'legal', 'position', 'surrounding_characteristic', 'transaction_type', 'interior_floor', 'interior_room']
+    const REALESTATE_ENTITY = ['area', 'potential', 'price', 'location']
+    var myLine = {}
+    // for (var i = 0; i < REALESTATE_ATTR.length; i++) {
+    //   myLine[REALESTATE_ATTR[i]] = new LeaderLine({
+    //     start: document.getElementById('realestate'),
+    //     end: document.getElementById(REALESTATE_ATTR[i]),
+    //     path: 'straight',
+    //     size: 1,
+    //     color: "blue"
+    //   });
+    // }
+    // for (var i = 0; i < REALESTATE_ENTITY.length; i++) {
+    //   myLine[REALESTATE_ENTITY[i]] = new LeaderLine({
+    //     start: document.getElementById('realestate'),
+    //     end: document.getElementById(REALESTATE_ENTITY[i]),
+    //     path: 'grid',
+    //     size: 1,
+    //     color: "blue"
+    //   });
+    // }
+    // const LOCATION_ATTR = ['addr_street','addr_ward','addr_city','addr_district']
+    // for (var i = 0; i < LOCATION_ATTR.length; i++) {
+    //   myLine[LOCATION_ATTR[i]] = new LeaderLine({
+    //     start: document.getElementById('location'),
+    //     end: document.getElementById(LOCATION_ATTR[i]),
+    //     path: 'grid',
+    //     size: 1,
+    //     color: "blue"
+    //   });
+    // }
+
+
   </script>
   <script src="client.js"></script>
 </body>
