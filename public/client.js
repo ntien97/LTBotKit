@@ -459,7 +459,7 @@ var Botkit = {
               var txt = "";
               var obj = message.intent_dict["price"];
               if (obj.response && obj.value) {
-                txt += obj.response + " " + obj.value;
+                txt += obj.response + " " + Math.round(obj.value) + " vnd";
               }
               if (txt !== "") {
                 var t = $(`<div class="message-text">${txt}</div>`)[0];
@@ -470,7 +470,7 @@ var Botkit = {
               var txt = "";
               var obj = message.intent_dict["area"];
               if (obj.response && obj.value) {
-                txt += obj.response + " " + obj.value;
+                txt += obj.response + " " + Math.round(obj.value) + " m2";
               }
               if (txt !== "") {
                 var t = $(`<div class="message-text">${txt}</div>`)[0];
