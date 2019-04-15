@@ -13,6 +13,9 @@ module.exports = function (controller) {
         default: []
     }
 
+    var userMessageCount = {
+    }
+
     function isEmpty(obj) {
         for (var key in obj) {
             if (obj.hasOwnProperty(key))
@@ -33,7 +36,7 @@ module.exports = function (controller) {
             convo.say({
                 text: resp.hello,
             });
-
+            userMessageCount[id] = 0;
         });
     }
 
@@ -47,13 +50,14 @@ module.exports = function (controller) {
         }
         setTimeout(() => {
             bot.reply(message, resp.hello)
+            userMessageCount[id] = 0;
         }, 1000)
 
     }
 
     function callConversationManager(bot, message) {
 
-        var id = message.user
+        var id = message.user;
         var raw_mesg = message.text
         var showCustomButton = false;
         var force_show = false;
@@ -84,7 +88,7 @@ module.exports = function (controller) {
             //     console.log(body)
             // })
             var delete_body = sync("DELETE", CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id + "&new_node=" + message.clearAttr.key);
-            console.log("DELETE GRAPH KEY ["+  message.clearAttr.key +"] CODE:" + delete_body.statusCode);
+            console.log("DELETE GRAPH KEY [" + message.clearAttr.key + "] CODE:" + delete_body.statusCode);
 
             showCustomButton = true;
             raw_mesg = "";
@@ -99,7 +103,6 @@ module.exports = function (controller) {
             force_show = true;
             raw_mesg = "";
         }
-
 
         if (!promiseBucket.id) {
             promiseBucket.id = []
@@ -258,10 +261,31 @@ module.exports = function (controller) {
                                         })
                                     }
                                     else {
-                                        bot.reply(message, {
-                                            graph: graph,
-                                            text: response_body.question
-                                        })
+                                        if (userMessageCount[id] > 3) {
+                                            bot.reply(message, {
+                                                graph: graph,
+                                                text: response_body.question,
+                                                force_result: [
+                                                    {
+                                                        title: 'In luôn kết quả',
+                                                        payload: {
+                                                            'force_show': true
+                                                        }
+                                                    }
+                                                ]
+                                            })
+                                        } else {
+                                            if (userMessageCount[id]) {
+                                                userMessageCount[id] += 1;
+                                            } else {
+                                                userMessageCount[id] = 1;
+                                            }
+                                            console.log("userMessageCount: ", userMessageCount[id])
+                                            bot.reply(message, {
+                                                graph: graph,
+                                                text: response_body.question
+                                            })
+                                        }
                                     }
                                 }
                         }
@@ -290,7 +314,7 @@ module.exports = function (controller) {
                         graph: {},
                         text: resp.err
                     })
-                    return 
+                    return
                 }
                 requestGET()
             })

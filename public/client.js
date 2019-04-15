@@ -282,7 +282,7 @@ var Botkit = {
     console.log(message)
     if (message.graph) {
       var graph = message.graph;
-      const REALESTATE_ATTR = ['interior_room','position', 'surrounding_characteristics','interior_floor',  'surrounding_place', 'realestate_type', 'orientation', 'legal',  'transaction_type']
+      const REALESTATE_ATTR = ['interior_room', 'position', 'surrounding_characteristics', 'interior_floor', 'surrounding_place', 'realestate_type', 'orientation', 'legal', 'transaction_type']
       const REALESTATE_ENTITY = ['price', 'potential', 'area', 'location']
       const LOCATION_ATTR = ['addr_street', 'addr_ward', 'addr_city', 'addr_district']
       var needActivate = [];
@@ -301,7 +301,7 @@ var Botkit = {
 
             needActivate.push(key);
           } else {
-            console.log($(id).find(".content"))
+            // console.log($(id).find(".content"))
             $($(id).find(".content")[0]).text("");
             $($(id).find(".content")[0]).hide();
             $(id).css('opacity', '0.5');
@@ -443,6 +443,7 @@ var Botkit = {
             message: message
           });
           if (message.intent_dict) {
+
             console.log(message.intent_dict)
             var count = 0;
             if (message.intent_dict["location"]) count += 1;
@@ -457,8 +458,8 @@ var Botkit = {
             if (message.intent_dict["price"]) {
               var txt = "";
               var obj = message.intent_dict["price"];
-              if (obj.response && obj.value && obj.value.length > 0) {
-                txt += obj.response + " " + obj.value[0];
+              if (obj.response && obj.value) {
+                txt += obj.response + " " + obj.value;
               }
               if (txt !== "") {
                 var t = $(`<div class="message-text">${txt}</div>`)[0];
@@ -468,8 +469,8 @@ var Botkit = {
             if (message.intent_dict["area"]) {
               var txt = "";
               var obj = message.intent_dict["area"];
-              if (obj.response && obj.value && obj.value.length > 0) {
-                txt += obj.response + " " + obj.value[0];
+              if (obj.response && obj.value) {
+                txt += obj.response + " " + obj.value;
               }
               if (txt !== "") {
                 var t = $(`<div class="message-text">${txt}</div>`)[0];
@@ -616,6 +617,7 @@ var Botkit = {
           message: message
         });
         if (message.attr_list) {
+
           console.log(message.attr_list)
           var filler = document.getElementById("list-mask-" + message.attrListId);
           if (message.text) {
@@ -674,6 +676,7 @@ var Botkit = {
         that.message_list.appendChild(that.next_line);
       }
       if (message.show_results) {
+
         message.resultSliderId = 'items-' + this.slider_message_count;
         this.slider_message_count += 1;
       }
