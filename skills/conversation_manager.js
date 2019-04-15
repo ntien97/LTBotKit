@@ -1,6 +1,6 @@
 resp = require("../response/response.js");
 request = require("request");
-
+sync = require('sync-request');
 const CONVERSATION_MANAGER_ENDPOINT = "https://rlet-bot.herokuapp.com/api/LT-conversation-manager"
 
 const ATTR_LIST = ["interior_floor", "interior_room", "legal", "orientation", "position", "realestate_type", "surrounding_characteristics", "surrounding_place", "transaction_type"];
@@ -43,7 +43,7 @@ module.exports = function (controller) {
         var id = message.user
         console.log(id)
         if (id) {
-            request.delete(CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id, (error, res, body) => {
+            sync.delete(CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id, (error, res, body) => {
                 console.log(body)
             })
         }
