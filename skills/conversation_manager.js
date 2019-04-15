@@ -27,9 +27,8 @@ module.exports = function (controller) {
             var id = message.user
             console.log(id)
             if (id) {
-                sync.delete(CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id, (error, res, body) => {
-                    console.log(body)
-                })
+                var delete_body = sync("DELETE", CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id);
+                console.log("DELETE GRAPH CODE:" + delete_body.statusCode);
             }
             convo.say({
                 text: resp.hello,
@@ -43,9 +42,8 @@ module.exports = function (controller) {
         var id = message.user
         console.log(id)
         if (id) {
-            sync.delete(CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id, (error, res, body) => {
-                console.log(body)
-            })
+            var delete_body = sync("DELETE", CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id);
+            console.log("DELETE GRAPH CODE:" + delete_body.statusCode);
         }
         setTimeout(() => {
             bot.reply(message, resp.hello)
@@ -82,9 +80,11 @@ module.exports = function (controller) {
         }
         if (message.clearAttr) {
 
-            sync.delete(CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id + "&new_node=" + message.clearAttr.key, (error, res, body) => {
-                console.log(body)
-            })
+            // sync.delete(CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id + "&new_node=" + message.clearAttr.key, (error, res, body) => {
+            //     console.log(body)
+            // })
+            var delete_body = sync("DELETE", CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id + "&new_node=" + message.clearAttr.key);
+            console.log("DELETE GRAPH KEY ["+  message.clearAttr.key +"] CODE:" + delete_body.statusCode);
 
             showCustomButton = true;
             raw_mesg = "";
