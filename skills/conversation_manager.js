@@ -27,7 +27,7 @@ module.exports = function (controller) {
             var id = message.user
             console.log(id)
             if (id) {
-                request.delete(CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id, (error, res, body) => {
+                sync.delete(CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id, (error, res, body) => {
                     console.log(body)
                 })
             }
@@ -82,7 +82,7 @@ module.exports = function (controller) {
         }
         if (message.clearAttr) {
 
-            request.delete(CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id + "&new_node=" + message.clearAttr.key, (error, res, body) => {
+            sync.delete(CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id + "&new_node=" + message.clearAttr.key, (error, res, body) => {
                 console.log(body)
             })
 
