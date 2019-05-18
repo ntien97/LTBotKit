@@ -6,5 +6,6 @@ module.exports = {
     thank: "Cảm ơn bạn. Chúc bạn có một ngày vui vẻ :D",
     whatyourattr: "Yêu cầu của bạn là gì?",
     showall: "Bạn có muốn xem thêm kết quả không?",
-    dontunderstand: "Tôi không hiểu ý của bạn lắm. Xin hãy nhập lại."
+    dontunderstand: "Tôi không hiểu ý của bạn lắm. Xin hãy nhập lại.",
+    start_rating: "Xin hãy giúp chúng tôi đánh giá rLeT Bot.",
 }

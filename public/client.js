@@ -37,6 +37,7 @@ var Botkit = {
   slider_message_count: 0,
   list_attr_count: 0,
   list_intent_count: 0,
+  rating_count: 0,
   guid: null,
   current_user: null,
   on: function (event, handler) {
@@ -107,7 +108,7 @@ var Botkit = {
     return false;
   },
   sendCustom: function (text, payload, e) {
-    console.log("here")
+    // console.log("here")
     var that = this;
     if (e) e.preventDefault();
     if (!text) {
@@ -177,7 +178,7 @@ var Botkit = {
 
       user.timezone_offset = new Date().getTimezoneOffset();
       that.current_user = user;
-      console.log('CONNECT WITH USER', user);
+      // console.log('CONNECT WITH USER', user);
     }
 
     // connect to the chat server!
@@ -227,7 +228,7 @@ var Botkit = {
 
     // Connection opened
     that.socket.addEventListener('open', function (event) {
-      console.log('CONNECTED TO SOCKET');
+      // console.log('CONNECTED TO SOCKET');
       that.reconnect_count = 0;
       that.trigger('connected', event);
       that.deliverMessage({
@@ -239,15 +240,15 @@ var Botkit = {
     });
 
     that.socket.addEventListener('error', function (event) {
-      console.error('ERROR', event);
+      // console.error('ERROR', event);
     });
 
     that.socket.addEventListener('close', function (event) {
-      console.log('SOCKET CLOSED!');
+      // console.log('SOCKET CLOSED!');
       that.trigger('disconnected', event);
       if (that.reconnect_count < that.config.max_reconnect) {
         setTimeout(function () {
-          console.log('RECONNECTING ATTEMPT ', ++that.reconnect_count);
+          // console.log('RECONNECTING ATTEMPT ', ++that.reconnect_count);
           that.connectWebsocket(that.config.ws_url);
         }, that.config.reconnect_timeout);
       } else {
@@ -279,7 +280,7 @@ var Botkit = {
   },
   renderMessage: function (message) {
     var that = this;
-    console.log(message)
+    // console.log(message)
     if (message.graph) {
       var graph = message.graph;
       const REALESTATE_ATTR = ['interior_room', 'position', 'surrounding_characteristics', 'interior_floor', 'surrounding_place', 'realestate_type', 'orientation', 'legal', 'transaction_type']
@@ -301,7 +302,7 @@ var Botkit = {
 
             needActivate.push(key);
           } else {
-            // console.log($(id).find(".content"))
+            // // console.log($(id).find(".content"))
             $($(id).find(".content")[0]).text("");
             $($(id).find(".content")[0]).hide();
             $(id).css('opacity', '0.5');
@@ -413,155 +414,336 @@ var Botkit = {
         obj.position();
       }
     }
-    if (!message.show_results) {
-      if (!message.attr_list) {
-        if (!message.intent_dict) {
-          if (!that.next_line) {
-            that.next_line = document.createElement('div');
-            that.message_list.appendChild(that.next_line);
+    if (message.start_rating) {
+      if (!that.next_line) {
+        that.next_line = document.createElement('div');
+        that.message_list.appendChild(that.next_line);
+      }
+      message.ratingId = this.rating_count;
+      this.rating_count += 1;
+      that.next_line.innerHTML = that.message_rating_template({
+        message: message
+      });
+      if (message.text) {
+        var filler = document.getElementById("rating-mask-" + message.ratingId);
+        var t = $(`<div class="message">${message.text}</div>`)[0];
+        var s = $(`<div class="message">
+        <span class="span_bold">Độ phù hợp của kết quả:</span>
+        <select class="select" id="appropriate_selector_${message.ratingId}">
+          <option value="khong_phu_hop">Không phù hợp</option>
+          <option value="hoi_thieu">Hơi thiếu kết quả</option>
+          <option value="phu_hop" selected>Phù hợp</option>
+          <option value="hoi_du">Hơi dư kết quả</option>
+        </select> </br>
+        <span class="span_bold">Bạn đã yêu cầu:</span> </br>
+          <input type="checkbox" value="real_estate" id="real_estate_${message.ratingId}">Tìm bất động sản</input> </br>
+          <input type="checkbox" value="price" id="price_${message.ratingId}">Hỏi về giá</input> </br>
+          <input type="checkbox" value="area" id="area_${message.ratingId}">Hỏi về diện tích</input> </br>
+          <input type="checkbox" value="potential" id="potential_${message.ratingId}">Hỏi về tiềm năng</input> </br>
+          <input type="checkbox" value="location" id="location_${message.ratingId}">Hỏi về địa điểm</input> </br>
+          <input type="checkbox" value="addr_district" id="addr_district_${message.ratingId}">Hỏi về quận</input> </br>
+          <input type="checkbox" value="other" id="other_${message.ratingId}">Không nằm trong các lựa chọn trên</input> </br>
+        <span class="span_bold">Độ hài lòng:</span>
+        <div class="rating">
+          <a href="javascript:;" class="rating__button" href="#"><svg class="rating__star">
+              <use xlink:href="#star"></use>
+            </svg></a>
+          <a href="javascript:;" class="rating__button" href="#"><svg class="rating__star">
+              <use xlink:href="#star"></use>
+            </svg></a>
+          <a href="javascript:;" class="rating__button" href="#"><svg class="rating__star">
+              <use xlink:href="#star"></use>
+            </svg></a>
+          <a href="javascript:;" class="rating__button" href="#"><svg class="rating__star">
+              <use xlink:href="#star"></use>
+            </svg></a>
+          <a href="javascript:;" class="rating__button" href="#"><svg class="rating__star">
+              <use xlink:href="#star"></use>
+            </svg></a>
+        </div> </br>
+        </div>`)[0];
+        filler.appendChild(t);
+        filler.appendChild(s);
+        for (var i = 0; i < message.catched_intents.length; i++) {
+          (function(ele){
+            $(`#${ele}_${message.ratingId}`).attr('checked', true);
+          })(message.catched_intents[i]);
+        }
+        $(`#rating-mask-${message.ratingId} input`).change(()=>{
+          var arr = $(`#rating-mask-${message.ratingId} input`);
+          var edited_intents = [];
+          for (var i = 0; i < arr.length; i++) {
+            (function(ele){
+              if (ele.is(':checked')) edited_intents.push(ele.val());
+            })($(arr[i]));
           }
-          if (message.text) {
-            message.html = converter.makeHtml(message.text);
-          }
-
-          that.next_line.innerHTML = that.message_template({
-            message: message
+          var anotherThat = that;
+          anotherThat.deliverMessage({
+            type: 'message',
+            rating_prop: {
+              catched_intents : edited_intents
+            },
+            user: that.guid,
+            channel: that.options.use_sockets ? 'socket' : 'webhook'
           });
-          if (!message.isTyping) {
-            delete (that.next_line);
-          }
-        } else {
-          if (!that.next_line) {
-            that.next_line = document.createElement('div');
-            that.message_list.appendChild(that.next_line);
-          }
-          if (message.intent_dict) {
-            message.intentListId = this.list_intent_count;
-            this.list_intent_count += 1;
-          }
-          that.next_line.innerHTML = that.message_intent_template({
-            message: message
+        })
+        $(`#appropriate_selector_${message.ratingId}`).change(()=>{
+          const appropriate_selector = $(`#appropriate_selector_${message.ratingId}`).val();
+          var anotherThat = that;
+          anotherThat.deliverMessage({
+            type: 'message',
+            rating_prop: {
+              appropriate : appropriate_selector
+            },
+            user: that.guid,
+            channel: that.options.use_sockets ? 'socket' : 'webhook'
           });
-          if (message.intent_dict) {
+        })
+        $('.rating__button').on('click', function (e) {
+          var $t = $(this), // the clicked star
+            $ct = $t.parent(); // the stars container
 
-            console.log(message.intent_dict)
-            var count = 0;
-            if (message.intent_dict["location"]) count += 1;
-            if (message.intent_dict["addr_district"]) count += 1;
-            if (message.intent_dict["potential"]) count += 1;
-            var showOptions = true;
-            if (count > 1) showOptions = false;
-            var filler = document.getElementById("intent-mask-" + message.intentListId);
+          // add .is--active to the user selected star 
+          $t.siblings().removeClass('is--active').end().toggleClass('is--active');
+          // add .has--rating to the rating container, if there's a star selected. remove it if there's no star selected.
+          $ct.find('.rating__button.is--active').length ? $ct.addClass('has--rating') : $ct.removeClass('has--rating');
 
-            console.log(filler);
-
-            if (message.intent_dict["price"]) {
-              var txt = "";
-              var obj = message.intent_dict["price"];
-              if (obj.response && obj.value) {
-                txt += obj.response + " " + Math.round(obj.value) + " vnd";
-              }
-              if (txt !== "") {
-                var t = $(`<div class="message-text">${txt}</div>`)[0];
-                filler.appendChild(t);
-              }
+          // sent start
+          var anotherThat = that;
+          anotherThat.deliverMessage({
+            type: 'message',
+            rating_prop: {
+              star : ($t.index() % 5 ) + 1
+            },
+            user: that.guid,
+            channel: that.options.use_sockets ? 'socket' : 'webhook'
+          });
+        });
+      }
+      if (!message.isTyping) {
+        delete (that.next_line);
+      }
+    } else {
+      if (!message.show_results) {
+        if (!message.attr_list) {
+          if (!message.intent_dict) {
+            if (!that.next_line) {
+              that.next_line = document.createElement('div');
+              that.message_list.appendChild(that.next_line);
             }
-            if (message.intent_dict["area"]) {
-              var txt = "";
-              var obj = message.intent_dict["area"];
-              if (obj.response && obj.value) {
-                txt += obj.response + " " + Math.round(obj.value) + " m2";
-              }
-              if (txt !== "") {
-                var t = $(`<div class="message-text">${txt}</div>`)[0];
-                filler.appendChild(t);
-              }
+            if (message.text) {
+              message.html = converter.makeHtml(message.text);
             }
 
-            for (var key in message.intent_dict) {
-              // skip loop if the property is from prototype
-              if (!message.intent_dict.hasOwnProperty(key)) continue;
-              if (key === "price" || key == "area") {
-                continue;
-              }
+            that.next_line.innerHTML = that.message_template({
+              message: message
+            });
+            if (!message.isTyping) {
+              delete (that.next_line);
+            }
+          } else {
+            if (!that.next_line) {
+              that.next_line = document.createElement('div');
+              that.message_list.appendChild(that.next_line);
+            }
+            if (message.intent_dict) {
+              message.intentListId = this.list_intent_count;
+              this.list_intent_count += 1;
+            }
+            that.next_line.innerHTML = that.message_intent_template({
+              message: message
+            });
+            if (message.intent_dict) {
 
-              var obj = message.intent_dict[key];
-              if (showOptions === true) {
+              // // console.log(message.intent_dict)
+              var count = 0;
+              if (message.intent_dict["location"]) count += 1;
+              if (message.intent_dict["addr_district"]) count += 1;
+              if (message.intent_dict["potential"]) count += 1;
+              var showOptions = true;
+              if (count > 1) showOptions = false;
+              var filler = document.getElementById("intent-mask-" + message.intentListId);
+
+              // // console.log(filler);
+
+              if (message.intent_dict["price"]) {
                 var txt = "";
+                var obj = message.intent_dict["price"];
                 if (obj.response && obj.value) {
-                  txt += obj.response;
+                  txt += obj.response + " " + Math.round(obj.value) + " vnd";
                 }
                 if (txt !== "") {
                   var t = $(`<div class="message-text">${txt}</div>`)[0];
                   filler.appendChild(t);
-                } else {
+                }
+              }
+              if (message.intent_dict["area"]) {
+                var txt = "";
+                var obj = message.intent_dict["area"];
+                if (obj.response && obj.value) {
+                  txt += obj.response + " " + Math.round(obj.value) + " m2";
+                }
+                if (txt !== "") {
+                  var t = $(`<div class="message-text">${txt}</div>`)[0];
+                  filler.appendChild(t);
+                }
+              }
+
+              for (var key in message.intent_dict) {
+                // skip loop if the property is from prototype
+                if (!message.intent_dict.hasOwnProperty(key)) continue;
+                if (key === "price" || key == "area") {
                   continue;
                 }
-                for (var i = 0; i < obj.value.length; i++) {
-                  (function (ele) {
-                    var li = $(`<div class="attr" lt-key="${key}">${ele}</div>`)[0];
-                    $(li).click(() => {
-                      var key = $(li).attr("lt-key");
-                      var value = $(li).text()
 
-                      var anotherThat = that;
-
-                      var response = "Xem kết quả với " + key2vn[key] + ": \"" + value.trim() + "\"";
-                      var message = {
-                        type: 'outgoing',
-                        text: response
-                      };
-                      // console.log(that)
-                      that.clearReplies();
-                      anotherThat.renderMessage(message);
-
-                      anotherThat.deliverMessage({
-                        type: 'message',
-                        filterAttr: { value: encodeURI(value), key: key },
-                        user: that.guid,
-                        channel: that.options.use_sockets ? 'socket' : 'webhook'
-                      });
-
-                      that.input.value = '';
-
-                      that.trigger('sent', message);
-
-                      console.log($($(li).parent()[0]).find(".attr"))
-                      $($(li).parent()[0]).find(".attr").remove();
-                      return false;
-                    })
-                    filler.appendChild(li);
-
-                  })(obj.value[i])
-                }
-              } else {
-                var txt = "";
-                if (obj.response && obj.value && obj.value.length > 0) {
-                  txt += obj.response + " ";
+                var obj = message.intent_dict[key];
+                if (showOptions === true) {
+                  var txt = "";
+                  if (obj.response && obj.value) {
+                    txt += obj.response;
+                  }
+                  if (txt !== "") {
+                    var t = $(`<div class="message-text">${txt}</div>`)[0];
+                    filler.appendChild(t);
+                  } else {
+                    continue;
+                  }
                   for (var i = 0; i < obj.value.length; i++) {
-                    txt += obj.value[i] + ", "
+                    (function (ele) {
+                      var li = $(`<div class="attr" lt-key="${key}">${ele}</div>`)[0];
+                      $(li).click(() => {
+                        var key = $(li).attr("lt-key");
+                        var value = $(li).text()
+
+                        var anotherThat = that;
+
+                        var response = "Xem kết quả với " + key2vn[key] + ": \"" + value.trim() + "\"";
+                        var message = {
+                          type: 'outgoing',
+                          text: response
+                        };
+                        // // console.log(that)
+                        that.clearReplies();
+                        anotherThat.renderMessage(message);
+
+                        anotherThat.deliverMessage({
+                          type: 'message',
+                          filterAttr: { value: encodeURI(value), key: key },
+                          user: that.guid,
+                          channel: that.options.use_sockets ? 'socket' : 'webhook'
+                        });
+
+                        that.input.value = '';
+
+                        that.trigger('sent', message);
+
+                        // console.log($($(li).parent()[0]).find(".attr"))
+                        $($(li).parent()[0]).find(".attr").remove();
+                        return false;
+                      })
+                      filler.appendChild(li);
+
+                    })(obj.value[i])
+                  }
+                } else {
+                  var txt = "";
+                  if (obj.response && obj.value && obj.value.length > 0) {
+                    txt += obj.response + " ";
+                    for (var i = 0; i < obj.value.length; i++) {
+                      txt += obj.value[i] + ", "
+                    }
+                  }
+                  if (txt !== "") {
+                    var t = $(`<div class="message-text">${txt}</div>`)[0];
+                    filler.appendChild(t);
+                  } else {
+                    continue;
                   }
                 }
-                if (txt !== "") {
-                  var t = $(`<div class="message-text">${txt}</div>`)[0];
-                  filler.appendChild(t);
-                } else {
-                  continue;
-                }
+
               }
 
-            }
+              for (var i = 0; i < message.intent_dict.length; i++) {
+                (function (ele) {
+                  var li = $(`<div class="attr" lt-key="${ele.key}">${ele.value}<span class="close">${close}</span>
+                  </div>`)[0]
+                  $(li).click(() => {
 
-            for (var i = 0; i < message.intent_dict.length; i++) {
+                    var key = $(li).attr("lt-key");
+                    if (key == "location") {
+                      key = "addr_district";
+                    }
+                    var value = $(li).text()
+
+                    var anotherThat = that;
+
+                    var response = "Bỏ yêu cầu \"" + value.trim() + "\"";
+                    var message = {
+                      type: 'outgoing',
+                      text: response
+                    };
+                    // // console.log(that)
+                    that.clearReplies();
+                    anotherThat.renderMessage(message);
+
+                    anotherThat.deliverMessage({
+                      type: 'message',
+                      clearAttr: { value: value, key: key },
+                      user: that.guid,
+                      channel: that.options.use_sockets ? 'socket' : 'webhook'
+                    });
+
+                    that.input.value = '';
+
+                    that.trigger('sent', message);
+
+                    // console.log($($(li).parent()[0]).find(".attr"))
+                    $($(li).parent()[0]).find(".attr").remove();
+                    return false;
+
+                  })
+                  filler.appendChild(li);
+                })(message.intent_dict[i])
+              }
+            }
+            if (message.text) {
+              var t = $(`<div class="message-text">${message.text}</div>`)[0];
+              filler.appendChild(t);
+            }
+            if (!message.isTyping) {
+              delete (that.next_line);
+            }
+          }
+        }
+        else {
+          if (!that.next_line) {
+            that.next_line = document.createElement('div');
+            that.message_list.appendChild(that.next_line);
+          }
+          if (message.attr_list) {
+            message.attrListId = this.list_attr_count;
+            this.list_attr_count += 1;
+          }
+          that.next_line.innerHTML = that.message_list_template({
+            message: message
+          });
+          if (message.attr_list) {
+
+            // console.log(message.attr_list)
+            var filler = document.getElementById("list-mask-" + message.attrListId);
+            if (message.text) {
+              var t = $(`<div class="message-text">${message.text}</div>`)[0];
+              filler.appendChild(t);
+            }
+            // console.log(filler);
+            var close = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" title="close the chat" ><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path> <path d="M0 0h24v24H0z" fill="none"></path></svg>`
+            for (var i = 0; i < message.attr_list.length; i++) {
               (function (ele) {
                 var li = $(`<div class="attr" lt-key="${ele.key}">${ele.value}<span class="close">${close}</span>
                 </div>`)[0]
                 $(li).click(() => {
 
                   var key = $(li).attr("lt-key");
-                  if (key == "location") {
-                    key = "addr_district";
-                  }
                   var value = $(li).text()
 
                   var anotherThat = that;
@@ -571,7 +753,7 @@ var Botkit = {
                     type: 'outgoing',
                     text: response
                   };
-                  // console.log(that)
+                  // // console.log(that)
                   that.clearReplies();
                   anotherThat.renderMessage(message);
 
@@ -586,165 +768,94 @@ var Botkit = {
 
                   that.trigger('sent', message);
 
-                  console.log($($(li).parent()[0]).find(".attr"))
+                  // console.log($($(li).parent()[0]).find(".attr"))
                   $($(li).parent()[0]).find(".attr").remove();
                   return false;
 
                 })
                 filler.appendChild(li);
-              })(message.intent_dict[i])
+              })(message.attr_list[i])
             }
-          }
-          if (message.text) {
-            var t = $(`<div class="message-text">${message.text}</div>`)[0];
-            filler.appendChild(t);
           }
           if (!message.isTyping) {
             delete (that.next_line);
           }
         }
-      }
-      else {
+      } else {
         if (!that.next_line) {
           that.next_line = document.createElement('div');
           that.message_list.appendChild(that.next_line);
         }
-        if (message.attr_list) {
-          message.attrListId = this.list_attr_count;
-          this.list_attr_count += 1;
+        if (message.show_results) {
+
+          message.resultSliderId = 'items-' + this.slider_message_count;
+          this.slider_message_count += 1;
         }
-        that.next_line.innerHTML = that.message_list_template({
+        that.next_line.className += " message-result-margin"
+        that.next_line.innerHTML = that.message_slider_template({
           message: message
         });
-        if (message.attr_list) {
+        if (message.show_results) {
+          var list = this.renderResultMessages(message.show_results, message.concerned_attributes);
 
-          console.log(message.attr_list)
-          var filler = document.getElementById("list-mask-" + message.attrListId);
           if (message.text) {
-            var t = $(`<div class="message-text">${message.text}</div>`)[0];
-            filler.appendChild(t);
+            var parentDiv = $(`#mask-${message.resultSliderId}`).parent()[0]
+            // console.log(parentDiv);
+            var t = $(`<div class="message-text-slider">${message.text[0]}</div>`)[0];
+            var u = $(`<div class="message-text-slider">${message.text[1]}</div>`)[0];
+            parentDiv.prepend(t);
+            parentDiv.append(u);
           }
-          console.log(filler);
-          var close = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" title="close the chat" ><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path> <path d="M0 0h24v24H0z" fill="none"></path></svg>`
-          for (var i = 0; i < message.attr_list.length; i++) {
-            (function (ele) {
-              var li = $(`<div class="attr" lt-key="${ele.key}">${ele.value}<span class="close">${close}</span>
-              </div>`)[0]
-              $(li).click(() => {
-
-                var key = $(li).attr("lt-key");
-                var value = $(li).text()
-
-                var anotherThat = that;
-
-                var response = "Bỏ yêu cầu \"" + value.trim() + "\"";
-                var message = {
-                  type: 'outgoing',
-                  text: response
-                };
-                // console.log(that)
-                that.clearReplies();
-                anotherThat.renderMessage(message);
-
-                anotherThat.deliverMessage({
-                  type: 'message',
-                  clearAttr: { value: value, key: key },
-                  user: that.guid,
-                  channel: that.options.use_sockets ? 'socket' : 'webhook'
-                });
-
-                that.input.value = '';
-
-                that.trigger('sent', message);
-
-                console.log($($(li).parent()[0]).find(".attr"))
-                $($(li).parent()[0]).find(".attr").remove();
-                return false;
-
-              })
-              filler.appendChild(li);
-            })(message.attr_list[i])
-          }
+          var sliderContainer = document.getElementById(`wrapper-${message.resultSliderId}`);
+          list.forEach(function (element) {
+            sliderContainer.appendChild(element);
+          })
+          sliderContainer.setAttribute("max-width", list.length * 310);
+          var a_left = $('<div class="carousel-prev"></div>')[0]
+          var a_right = $('<div class="carousel-next"></div>')[0]
+          var left = $('<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"></path> <path d="M0-.5h24v24H0z" fill="none"></path></svg>')[0]
+          var right = $('<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"></path> <path d="M0-.25h24v24H0z" fill="none"></path></svg>')[0]
+          a_left.append(left)
+          a_right.append(right)
+          var mask = document.getElementById(`mask-${message.resultSliderId}`);
+          // console.log(a_left)
+          $(a_left).hide();
+          $(a_right).click(() => {
+            var id = `wrapper-${message.resultSliderId}`;
+            var wrapperWidth = parseInt($("#" + id).attr("max-width"));
+            var marginLeft = parseInt($("#" + id).css('margin-left'));
+            var offset = RESULT_MESSAGE_WIDTH_TRANS;
+            marginLeft -= offset;
+            if (marginLeft >= (-wrapperWidth + RESULT_MESSAGE_WIDTH_TRANS)) {
+              var str = marginLeft + "px !important";
+              $("#" + id).attr('style', 'margin-left: ' + str);
+              if (marginLeft - offset < (-wrapperWidth + RESULT_MESSAGE_WIDTH_TRANS)) {
+                $(a_right).hide();
+              }
+            }
+            $(a_left).show();
+          })
+          $(a_left).click(() => {
+            var id = `wrapper-${message.resultSliderId}`;
+            var marginLeft = parseInt($("#" + id).css('margin-left'));
+            var offset = RESULT_MESSAGE_WIDTH_TRANS;
+            marginLeft += offset;
+            if (marginLeft >= 0) {
+              marginLeft = 0;
+              $(a_left).hide();
+            }
+            var str = marginLeft + "px !important";
+            $("#" + id).attr('style', 'margin-left: ' + str);
+            $(a_right).show();
+          })
+          mask.appendChild(a_left);
+          mask.appendChild(a_right);
         }
         if (!message.isTyping) {
           delete (that.next_line);
         }
       }
-    } else {
-      if (!that.next_line) {
-        that.next_line = document.createElement('div');
-        that.message_list.appendChild(that.next_line);
-      }
-      if (message.show_results) {
-
-        message.resultSliderId = 'items-' + this.slider_message_count;
-        this.slider_message_count += 1;
-      }
-      that.next_line.className += " message-result-margin"
-      that.next_line.innerHTML = that.message_slider_template({
-        message: message
-      });
-      if (message.show_results) {
-        var list = this.renderResultMessages(message.show_results, message.concerned_attributes);
-
-        if (message.text) {
-          var parentDiv = $(`#mask-${message.resultSliderId}`).parent()[0]
-          console.log(parentDiv);
-          var t = $(`<div class="message-text-slider">${message.text[0]}</div>`)[0];
-          var u = $(`<div class="message-text-slider">${message.text[1]}</div>`)[0];
-          parentDiv.prepend(t);
-          parentDiv.append(u);
-        }
-        var sliderContainer = document.getElementById(`wrapper-${message.resultSliderId}`);
-        list.forEach(function (element) {
-          sliderContainer.appendChild(element);
-        })
-        sliderContainer.setAttribute("max-width", list.length * 310);
-        var a_left = $('<div class="carousel-prev"></div>')[0]
-        var a_right = $('<div class="carousel-next"></div>')[0]
-        var left = $('<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"></path> <path d="M0-.5h24v24H0z" fill="none"></path></svg>')[0]
-        var right = $('<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"></path> <path d="M0-.25h24v24H0z" fill="none"></path></svg>')[0]
-        a_left.append(left)
-        a_right.append(right)
-        var mask = document.getElementById(`mask-${message.resultSliderId}`);
-        console.log(a_left)
-        $(a_left).hide();
-        $(a_right).click(() => {
-          var id = `wrapper-${message.resultSliderId}`;
-          var wrapperWidth = parseInt($("#" + id).attr("max-width"));
-          var marginLeft = parseInt($("#" + id).css('margin-left'));
-          var offset = RESULT_MESSAGE_WIDTH_TRANS;
-          marginLeft -= offset;
-          if (marginLeft >= (-wrapperWidth + RESULT_MESSAGE_WIDTH_TRANS)) {
-            var str = marginLeft + "px !important";
-            $("#" + id).attr('style', 'margin-left: ' + str);
-            if (marginLeft - offset < (-wrapperWidth + RESULT_MESSAGE_WIDTH_TRANS)) {
-              $(a_right).hide();
-            }
-          }
-          $(a_left).show();
-        })
-        $(a_left).click(() => {
-          var id = `wrapper-${message.resultSliderId}`;
-          var marginLeft = parseInt($("#" + id).css('margin-left'));
-          var offset = RESULT_MESSAGE_WIDTH_TRANS;
-          marginLeft += offset;
-          if (marginLeft >= 0) {
-            marginLeft = 0;
-            $(a_left).hide();
-          }
-          var str = marginLeft + "px !important";
-          $("#" + id).attr('style', 'margin-left: ' + str);
-          $(a_right).show();
-        })
-        mask.appendChild(a_left);
-        mask.appendChild(a_right);
-      }
-      if (!message.isTyping) {
-        delete (that.next_line);
-      }
     }
-
   },
   triggerScript: function (script, thread) {
     this.deliverMessage({
@@ -775,12 +886,12 @@ var Botkit = {
     switch (event.data.name) {
       case 'trigger':
         // tell Botkit to trigger a specific script/thread
-        console.log('TRIGGER', event.data.script, event.data.thread);
+        // console.log('TRIGGER', event.data.script, event.data.thread);
         Botkit.triggerScript(event.data.script, event.data.thread);
         break;
       case 'identify':
         // link this account info to this user
-        console.log('IDENTIFY', event.data.user);
+        // console.log('IDENTIFY', event.data.user);
         Botkit.identifyUser(event.data.user);
         break;
       case 'connect':
@@ -788,7 +899,7 @@ var Botkit = {
         Botkit.connect(event.data.user);
         break;
       default:
-        console.log('UNKNOWN COMMAND', event.data);
+        // console.log('UNKNOWN COMMAND', event.data);
     }
   },
   sendEvent: function (event) {
@@ -869,7 +980,7 @@ var Botkit = {
   },
   boot: function (user) {
 
-    console.log('Booting up');
+    // console.log('Booting up');
 
     var that = this;
 
@@ -889,6 +1000,9 @@ var Botkit = {
 
     var custom_source_3 = document.getElementById('message_intent_template').innerHTML;
     that.message_intent_template = Handlebars.compile(custom_source_3);
+
+    var custom_source_4 = document.getElementById('message_rating_template').innerHTML;
+    that.message_rating_template = Handlebars.compile(custom_source_4);
 
     that.replies = document.getElementById('message_replies');
 
@@ -912,7 +1026,7 @@ var Botkit = {
     that.on('webhook_error', function (err) {
 
       alert('Error sending message!');
-      console.error('Webhook Error', err);
+      // console.error('Webhook Error', err);
 
     });
 
@@ -1013,7 +1127,7 @@ var Botkit = {
 
             el.onclick = function () {
 
-              console.log(reply.title, reply.payload);
+              // console.log(reply.title, reply.payload);
               that.sendCustom(reply.title, reply.payload);
             }
 
@@ -1066,11 +1180,11 @@ var Botkit = {
         type: 'event',
         name: 'booted'
       });
-      console.log('Messenger booted in embedded mode');
+      // console.log('Messenger booted in embedded mode');
 
     } else {
 
-      console.log('Messenger booted in stand-alone mode');
+      // console.log('Messenger booted in stand-alone mode');
       // this is a stand-alone client. connect immediately.
       that.connect(user);
     }

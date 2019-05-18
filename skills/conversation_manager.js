@@ -2,6 +2,7 @@ resp = require("../response/response.js");
 request = require("request");
 sync = require('sync-request');
 const CONVERSATION_MANAGER_ENDPOINT = "https://rlet-bot.herokuapp.com/api/LT-conversation-manager"
+const RATING_CONVERSATION_ENDPOINT = "https://rlet-bot.herokuapp.com/api/LT-save-rating-conversation"
 
 const ATTR_LIST = ["interior_floor", "interior_room", "legal", "orientation", "position", "realestate_type", "surrounding_characteristics", "surrounding_place", "transaction_type"];
 const ENTITY_LIST = ["area", "location", "potential", "price", "addr_district"]
@@ -15,6 +16,13 @@ module.exports = function (controller) {
 
     var userMessageCount = {
     }
+
+    var isRating = false;
+    var star = {};
+    var appropriate = {}; // "khong_phu_hop", "hoi_thieu", "phu_hop", "hoi_du"
+    var catched_intents = {}; //arr type
+    var edited_intents = {}; // arr type
+    var conversation = {}; // arr type
 
     function isEmpty(obj) {
         for (var key in obj) {
@@ -41,10 +49,30 @@ module.exports = function (controller) {
     }
 
     function restartConversation(bot, message) {
-        bot.reply(message, { graph: {}, text: resp.thank });
         var id = message.user
+        if (isRating && message.save) {
+            console.log("CALL SAVE API HERE")
+            body = {
+                star: star[id],
+                appropriate: appropriate[id],
+                catched_intents: catched_intents[id],
+                edited_intents: edited_intents[id],
+                conversation: conversation[id]
+            }
+            console.log(JSON.stringify(body))
+            request.post(RATING_CONVERSATION_ENDPOINT, { json: body }, (err, resp, data) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(data);
+                }
+            })
+        }
+        isRating = false;
+        bot.reply(message, { graph: {}, text: resp.thank });
         console.log(id)
         if (id) {
+            conversation[id] = [];
             var delete_body = sync("DELETE", CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id);
             console.log("DELETE GRAPH CODE:" + delete_body.statusCode);
         }
@@ -64,9 +92,52 @@ module.exports = function (controller) {
         var remove_more = false;
         var filter_attr = false;
         var filter_all = false;
-        console.log(message)
+        console.log(message);
+        if (conversation[message.user]) {
+            conversation[message.user].push({ "user": raw_mesg });
+        } else {
+            conversation[message.user] = [{ "user": raw_mesg }];
+        }
+        if (message.rating_prop) {
+            console.log(message.rating_prop)
+            if (message.rating_prop.star) star[message.user] = message.rating_prop.star;
+            if (message.rating_prop.appropriate) appropriate[message.user] = message.rating_prop.appropriate;
+            if (message.rating_prop.catched_intents) edited_intents[message.user] = message.rating_prop.catched_intents;
+            return;
+        }
         if (message.continue) {
+            conversation[message.user].push({ "bot": resp.whatyourattr });
             bot.reply(message, resp.whatyourattr);
+            return;
+        }
+        if (message.start_rating) {
+            isRating = true;
+            star[message.user] = -1;
+            appropriate[message.user] = "phu_hop"; // "khong_phu_hop", "hoi_thieu", "phu_hop", "hoi_du"
+            catched_intents[message.user] = message.catched_intents;
+            edited_intents[message.user] = message.catched_intents;
+            conversation[message.user].push({ "bot": resp.start_rating });
+            bot.reply(message, {
+                text: resp.start_rating,
+                start_rating: true,
+                catched_intents: catched_intents[message.user],
+                force_result: [
+                    {
+                        title: 'Save',
+                        payload: {
+                            'quit': true,
+                            'save': true
+                        }
+                    },
+                    {
+                        title: 'Cancel',
+                        payload: {
+                            'quit': true,
+                            'save': false
+                        },
+                    },
+                ]
+            });
             return;
         }
         if (message.quit) {
@@ -145,6 +216,7 @@ module.exports = function (controller) {
                             bucket = []
                             promiseBucket.id = []
                             if (response_body.initial_fill == false) {
+                                conversation[message.user].push({ "bot": resp.dontunderstand });
                                 bot.reply(message, {
                                     text: resp.dontunderstand
                                 })
@@ -184,18 +256,21 @@ module.exports = function (controller) {
                                             })(mentioned_attributes[i]);
                                         }
                                         if (list && list.length > 0) {
+                                            conversation[message.user].push({ "bot": resp.cantfind });
                                             bot.reply(message, {
                                                 text: resp.cantfind,
                                                 attr_list: list,
                                                 graph: graph,
                                             })
                                         } else {
+                                            conversation[message.user].push({ "bot": resp.wetried });
                                             bot.reply(message, { graph: graph, text: resp.wetried })
                                         }
 
                                     } else {
                                         // for result_container != []
                                         if (response_body.intent_values_container && !isEmpty(response_body.intent_values_container)) {
+                                            conversation[message.user].push({ "bot": resp.showall });
                                             bot.reply(message, {
                                                 text: resp.showall,
                                                 intent_dict: response_body.intent_values_container,
@@ -204,7 +279,8 @@ module.exports = function (controller) {
                                                     {
                                                         title: 'Được rồi, cảm ơn!',
                                                         payload: {
-                                                            'quit': true
+                                                            'start_rating': true,
+                                                            'catched_intents': graph.current_intents
                                                         }
                                                     },
                                                     {
@@ -216,6 +292,9 @@ module.exports = function (controller) {
                                                 ]
                                             })
                                         } else {
+                                            console.log(response_body.result_container)
+                                            conversation[message.user].push({ "bot": response_body.intent_response ? response_body.intent_response : "Kết quả của bạn: " });
+                                            conversation[message.user].push({ "bot": "Bạn có muốn thêm yêu cầu gì không?" });
                                             bot.reply(message, {
                                                 text: [response_body.intent_response ? response_body.intent_response : "Kết quả của bạn: ", "Bạn có muốn thêm yêu cầu gì không?"],
                                                 show_results: response_body.result_container,
@@ -231,7 +310,8 @@ module.exports = function (controller) {
                                                     {
                                                         title: 'Được rồi, cảm ơn!',
                                                         payload: {
-                                                            'quit': true
+                                                            'start_rating': true,
+                                                            'catched_intents': graph.current_intents
                                                         }
                                                     }
                                                 ]
@@ -241,6 +321,7 @@ module.exports = function (controller) {
 
                                 } else {
                                     if (showCustomButton) {
+                                        conversation[message.user].push({ "bot": response_body.question });
                                         bot.reply(message, {
                                             text: response_body.question,
                                             graph: graph,
@@ -262,6 +343,7 @@ module.exports = function (controller) {
                                     }
                                     else {
                                         if (userMessageCount[id] > 3) {
+                                            conversation[message.user].push({ "bot": response_body.question });
                                             bot.reply(message, {
                                                 graph: graph,
                                                 text: response_body.question,
@@ -281,6 +363,7 @@ module.exports = function (controller) {
                                                 userMessageCount[id] = 1;
                                             }
                                             console.log("userMessageCount: ", userMessageCount[id])
+                                            conversation[message.user].push({ "bot": response_body.question });
                                             bot.reply(message, {
                                                 graph: graph,
                                                 text: response_body.question
@@ -290,6 +373,7 @@ module.exports = function (controller) {
                                 }
                         }
                     } catch (e) {
+                        conversation[message.user].push({ "bot": resp.err });
                         bot.reply(message, {
                             graph: graph,
                             text: resp.err
@@ -310,6 +394,7 @@ module.exports = function (controller) {
             }, (error, res, body) => {
                 if (error) {
                     console.log(error);
+                    conversation[message.user].push({ "bot": resp.err });
                     bot.reply(message, {
                         graph: {},
                         text: resp.err

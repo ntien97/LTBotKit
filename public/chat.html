@@ -211,39 +211,44 @@
                       class="button_message">{{#if message.link_title}}{{message.link_title}}{{else}}{{message.open_link}}{{/if}}</a>
                     {{/if}}
                   </div>
-                  {{#message.files}}
-                  <div class="file_attachment">
-                    {{#if image}}
-                    <img src="{{{url}}}" alt="{{{url}}}" />
-                    {{else}}
-                    <a href="{{{url}}}" title="{{{url}}}">{{{url}}}</a>
-                    {{/if}}
-                  </div>
-                  {{/message.files}}
                 </div>
 
-                <div id="message_slider_template">
-                  <div class="carousel-mask" id="mask-{{{message.resultSliderId}}}">
-                    <div class="carousel-items" id="wrapper-{{{message.resultSliderId}}}">
-                    </div>
+                <div id="message_rating_template">
+                  <div class="rating-mask" id="rating-mask-{{{message.ratingId}}}">
+                    <svg style="display: none;">
+                      <symbol id="star" viewBox="0 0 98 92">
+                        <title>star</title>
+                        <path stroke='#000' stroke-width='0'
+                          d='M49 73.5L22.55 87.406l5.05-29.453-21.398-20.86 29.573-4.296L49 6l13.225 26.797 29.573 4.297-21.4 20.86 5.052 29.452z'
+                          fill-rule='evenodd' />
+                    </svg>
                   </div>
                 </div>
 
-                <div id="message_list_template">
-                  <div class="list-mask" id="list-mask-{{{message.attrListId}}}">
-                  </div>
-                </div>
+              </div>
 
-                <div id="message_intent_template">
-                  <div class="list-mask" id="intent-mask-{{{message.intentListId}}}">
+              <div id="message_slider_template">
+                <div class="carousel-mask" id="mask-{{{message.resultSliderId}}}">
+                  <div class="carousel-items" id="wrapper-{{{message.resultSliderId}}}">
                   </div>
                 </div>
+              </div>
+
+              <div id="message_list_template">
+                <div class="list-mask" id="list-mask-{{{message.attrListId}}}">
+                </div>
+              </div>
+
+              <div id="message_intent_template">
+                <div class="list-mask" id="intent-mask-{{{message.intentListId}}}">
+                </div>
+              </div>
             </section>
             <div id="message_replies">
             </div>
             <footer>
               <form id="form_mesg" onsubmit="Botkit.send(Botkit.input.value, event)">
-                <input type="text" autocomplete="off" id="messenger_input" placeholder="Type your message here"
+                <input type="text" autocomplete="off" id="messenger_input" placeholder="Nhập tin nhắn ở đây"
                   onkeyup="stoppedTyping()" />
                 <button type="submit" id="send_btn">
                   <div class="send">
@@ -277,6 +282,7 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.7.0/min/tiny-slider.js"></script>
+
   <script type="text/javascript">
     $("#messenger_input").focus();
     function stoppedTyping() {
@@ -340,14 +346,14 @@
           var id = "#bottom_four_" + key
           var curLen = parseInt($("#" + key).css("left"));
           curLen += offset
-          console.log(offset)
-          console.log($(id).css("left"))
-          console.log(curLen)
+          // console.log(offset)
+          // console.log($(id).css("left"))
+          // console.log(curLen)
           $(id).css("left", curLen + "px")
         }
         for (var i = 0; i < line_list[key].length; i++) {
           (function (line) {
-            if (key === "area") console.log(myLine[line])
+            if (key === "area") // console.log(myLine[line])
             myLine[line].color = "var(--primary-color)"
             myLine[line].size = 3
             myLine[line].position()
