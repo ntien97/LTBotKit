@@ -4,7 +4,7 @@ sync = require('sync-request');
 const CONVERSATION_MANAGER_ENDPOINT = "https://rlet-bot.herokuapp.com/api/LT-conversation-manager"
 const RATING_CONVERSATION_ENDPOINT = "https://rlet-bot.herokuapp.com/api/LT-save-rating-conversation"
 
-const ATTR_LIST = ["interior_floor", "interior_room", "legal", "orientation", "position", "realestate_type", "surrounding_characteristics", "surrounding_place", "transaction_type"];
+const ATTR_LIST = ["interior_floor", "interior_room", "legal", "orientation", "position", "realestate_type", "surrounding_characteristics", "surrounding_name", "surrounding", "transaction_type"];
 const ENTITY_LIST = ["area", "location", "potential", "price", "addr_district"]
 const LOCATION_ATTR_LIST = ["addr_city", "addr_street", "addr_ward", "addr_district"]
 
@@ -222,8 +222,10 @@ module.exports = function (controller) {
                                 })
                             } else
                                 if (response_body.has_results === true) {
-
+                                    // có kết quả, trả lời được rồi
                                     if (response_body.result_container.length == 0 || remove_more === true) {
+                                        // nếu container không có gì hoặc người dùng muốn xóa bớt attr
+                                        // show các attr đang có để xóa
                                         var list = []
                                         var mentioned_attributes = response_body.mentioned_attributes;
 
@@ -269,6 +271,7 @@ module.exports = function (controller) {
 
                                     } else {
                                         // for result_container != []
+                                        // show kết quả 
                                         if (response_body.intent_values_container && !isEmpty(response_body.intent_values_container)) {
                                             conversation[message.user].push({ "bot": resp.showall });
                                             bot.reply(message, {
@@ -320,7 +323,8 @@ module.exports = function (controller) {
                                     }
 
                                 } else {
-                                    if (showCustomButton) {
+                                    // chưa trả lời được do số doc còn nhiều
+                                    if (showCustomButton) { // show nút bấm cho người dùng
                                         conversation[message.user].push({ "bot": response_body.question });
                                         bot.reply(message, {
                                             text: response_body.question,
@@ -342,6 +346,7 @@ module.exports = function (controller) {
                                         })
                                     }
                                     else {
+                                        // lấy câu hỏi lại rồi hỏi người dùng
                                         if (userMessageCount[id] > 3) {
                                             conversation[message.user].push({ "bot": response_body.question });
                                             bot.reply(message, {

@@ -1,6 +1,10 @@
 var converter = new showdown.Converter();
 converter.setOption('openLinksInNewWindow', true);
 const RESULT_MESSAGE_WIDTH_TRANS = 310;
+const price_formatter = new Intl.NumberFormat('it-IT', {
+  style: 'currency',
+  currency: 'VND'
+})
 const key2vn = {
   'price': "Giá",
   'transaction_type': "Loại GD",
@@ -19,6 +23,61 @@ const key2vn = {
   'surrounding_place': "Gần",
   'addr_ward': "Phường",
   'addr_street': "Đường"
+}
+const addr2vn = {
+  '1': 'quận 1',
+  '2': 'quận 2',
+  '3': 'quận 3',
+  '4': 'quận 4',
+  '5': 'quận 5',
+  '6': 'quận 6',
+  '7': 'quận 7',
+  '8': 'quận 8',
+  '9': 'quận 9',
+  '10': 'quận 10',
+  '11': 'quận 11',
+  '12': 'quận 12',
+  'thu duc': 'quận Thủ Đức',
+  'go vap': 'quận Gò Vấp',
+  'binh thanh': 'quận Bình Thạnh',
+  'tan binh': 'quận Tân Bình',
+  'tan phu': 'quận Tân Phú',
+  'phu nhuan': 'quận Phú Nhuận',
+  'binh tan': 'quận Bình Tân',
+  'cu chi': 'huyện Củ Chi',
+  'hoc mon': 'huyện Hóc Môn',
+  'binh chanh': 'huyện Bình Chánh',
+  'nha be': 'huyện Nhà Bè',
+  'can gio': 'huyện Cần Giờ',
+  'ba dinh': 'quận Ba Đình',
+  'hoan kiem': 'quận Hoàn Kiếm',
+  'hai ba trung': 'quận Hai Bà Trưng',
+  'dong da': 'quận Đống Đa',
+  'tay ho': 'quận Tây Hồ',
+  'cau giay': 'quận Cầu Giấy',
+  'thanh xuan': 'quận Thanh Xuân',
+  'hoang mai': 'quận Hoàng Mai',
+  'long bien': 'quận Long Biên',
+  'tu liem': 'huyện Từ Liêm',
+  'thanh tri': 'huyện Thanh Trì',
+  'gia lam': 'huyện Gia Lâm',
+  'dong anh': 'huyện Đông Anh',
+  'soc son': 'huyện Sóc Sơn',
+  'ha dong': 'quận Hà Đông',
+  'son tay': 'Thị xã Sơn Tây',
+  'ba vi': 'huyện Ba Vì',
+  'phuc tho': 'huyện Phúc Thọ',
+  'thach that': 'huyện Thạch Thất',
+  'quoc oai': 'huyện Quốc Oai',
+  'chuong my': 'huyện Chương Mỹ',
+  'dan phuong': 'huyện Đan Phượng',
+  'hoai duc': 'huyện Hoài Đức',
+  'thanh oai': 'huyện Thanh Oai',
+  'my duc': 'huyện Mỹ Đức',
+  'ung hoa': 'huyện Ứng Hoà',
+  'thuong tin': 'huyện Thường Tín',
+  'phu xuyen': 'huyện Phú Xuyên',
+  'me linh': 'huyện Mê Linh'
 }
 
 const MAX_ATTR = 5;
@@ -465,15 +524,15 @@ var Botkit = {
         filler.appendChild(t);
         filler.appendChild(s);
         for (var i = 0; i < message.catched_intents.length; i++) {
-          (function(ele){
+          (function (ele) {
             $(`#${ele}_${message.ratingId}`).attr('checked', true);
           })(message.catched_intents[i]);
         }
-        $(`#rating-mask-${message.ratingId} input`).change(()=>{
+        $(`#rating-mask-${message.ratingId} input`).change(() => {
           var arr = $(`#rating-mask-${message.ratingId} input`);
           var edited_intents = [];
           for (var i = 0; i < arr.length; i++) {
-            (function(ele){
+            (function (ele) {
               if (ele.is(':checked')) edited_intents.push(ele.val());
             })($(arr[i]));
           }
@@ -481,19 +540,19 @@ var Botkit = {
           anotherThat.deliverMessage({
             type: 'message',
             rating_prop: {
-              catched_intents : edited_intents
+              catched_intents: edited_intents
             },
             user: that.guid,
             channel: that.options.use_sockets ? 'socket' : 'webhook'
           });
         })
-        $(`#appropriate_selector_${message.ratingId}`).change(()=>{
+        $(`#appropriate_selector_${message.ratingId}`).change(() => {
           const appropriate_selector = $(`#appropriate_selector_${message.ratingId}`).val();
           var anotherThat = that;
           anotherThat.deliverMessage({
             type: 'message',
             rating_prop: {
-              appropriate : appropriate_selector
+              appropriate: appropriate_selector
             },
             user: that.guid,
             channel: that.options.use_sockets ? 'socket' : 'webhook'
@@ -513,7 +572,7 @@ var Botkit = {
           anotherThat.deliverMessage({
             type: 'message',
             rating_prop: {
-              star : ($t.index() % 5 ) + 1
+              star: ($t.index() % 5) + 1
             },
             user: that.guid,
             channel: that.options.use_sockets ? 'socket' : 'webhook'
@@ -570,7 +629,8 @@ var Botkit = {
                 var txt = "";
                 var obj = message.intent_dict["price"];
                 if (obj.response && obj.value) {
-                  txt += obj.response + " " + Math.round(obj.value) + " vnd";
+                  txt += obj.response + " " + price_formatter.format(obj.value);
+                  
                 }
                 if (txt !== "") {
                   var t = $(`<div class="message-text">${txt}</div>`)[0];
@@ -588,7 +648,7 @@ var Botkit = {
                   filler.appendChild(t);
                 }
               }
-
+              console.log(message.intent_dict);
               for (var key in message.intent_dict) {
                 // skip loop if the property is from prototype
                 if (!message.intent_dict.hasOwnProperty(key)) continue;
@@ -610,14 +670,17 @@ var Botkit = {
                   }
                   for (var i = 0; i < obj.value.length; i++) {
                     (function (ele) {
-                      var li = $(`<div class="attr" lt-key="${key}">${ele}</div>`)[0];
+                      var li = $(`<div class="attr" lt-key="${key}" lt-value="${ele}"">${addr2vn[ele] ?addr2vn[ele] : ele}</div>`)[0];
                       $(li).click(() => {
                         var key = $(li).attr("lt-key");
-                        var value = $(li).text()
+                        if (key == "location") {
+                          key = "addr_district";
+                        }
+                        var value = $(li).attr("lt-value");
 
                         var anotherThat = that;
 
-                        var response = "Xem kết quả với " + key2vn[key] + ": \"" + value.trim() + "\"";
+                        var response = "Xem kết quả với " + key2vn[key] + ": \"" + $(li).text() + "\"";
                         var message = {
                           type: 'outgoing',
                           text: response
@@ -662,7 +725,7 @@ var Botkit = {
                 }
 
               }
-
+              console.log(message.intent_dict);
               for (var i = 0; i < message.intent_dict.length; i++) {
                 (function (ele) {
                   var li = $(`<div class="attr" lt-key="${ele.key}">${ele.value}<span class="close">${close}</span>
@@ -729,7 +792,7 @@ var Botkit = {
           });
           if (message.attr_list) {
 
-            // console.log(message.attr_list)
+            console.log(message.attr_list)
             var filler = document.getElementById("list-mask-" + message.attrListId);
             if (message.text) {
               var t = $(`<div class="message-text">${message.text}</div>`)[0];
@@ -885,21 +948,15 @@ var Botkit = {
   receiveCommand: function (event) {
     switch (event.data.name) {
       case 'trigger':
-        // tell Botkit to trigger a specific script/thread
-        // console.log('TRIGGER', event.data.script, event.data.thread);
         Botkit.triggerScript(event.data.script, event.data.thread);
         break;
       case 'identify':
-        // link this account info to this user
-        // console.log('IDENTIFY', event.data.user);
         Botkit.identifyUser(event.data.user);
         break;
       case 'connect':
-        // link this account info to this user
         Botkit.connect(event.data.user);
         break;
       default:
-        // console.log('UNKNOWN COMMAND', event.data);
     }
   },
   sendEvent: function (event) {
@@ -942,21 +999,21 @@ var Botkit = {
   renderResultMessages: function (results, concerned_attributes) {
     var elements = [];
     var len = Math.min(10, results.length);
+    console.log("RESULT");
+    console.log(results);
+    console.log(concerned_attributes);
     for (var r = 0; r < len; r++) {
       (function (result) {
 
-        // var li = document.createElement('div');
-        // li.className += " message-result"
-        // var span = document.createElement('p');
-        // span.innerText = result.tittle;
-        // li.appendChild(span);
-
         var title = `<div class="tittle"><a href="${result.url}" target="#">${result.tittle}</div></marquee>`
-
         var list_row = '';
         var count = 0;
         for (var i = 0; i < concerned_attributes.length; i++)
           if (result[concerned_attributes[i]] && count < MAX_ATTR) {
+            let raw_key = concerned_attributes[i] + "_raw";
+            if (concerned_attributes[i] === "interior_floor" || concerned_attributes[i] === "interior_room") {
+              raw_key = concerned_attributes[i];
+            }
             if (concerned_attributes[i] === "orientation" & result[concerned_attributes[i]] === "Không xác định") {
               continue;
             }
@@ -964,7 +1021,7 @@ var Botkit = {
               continue;
             }
             count += 1;
-            var val = result[concerned_attributes[i]]
+            var val = result[raw_key] ? result[raw_key] : result[concerned_attributes[i]]
             var row = `<tr><th>${key2vn[concerned_attributes[i]]}</th><td>: ${val}</td></tr>`;
             list_row += row;
           }
@@ -980,10 +1037,7 @@ var Botkit = {
   },
   boot: function (user) {
 
-    // console.log('Booting up');
-
     var that = this;
-
 
     that.message_window = document.getElementById("message_window");
 
@@ -1024,10 +1078,7 @@ var Botkit = {
     });
 
     that.on('webhook_error', function (err) {
-
       alert('Error sending message!');
-      // console.error('Webhook Error', err);
-
     });
 
     that.on('typing', function () {
@@ -1092,14 +1143,6 @@ var Botkit = {
 
         that.replies.appendChild(list);
 
-        // uncomment this code if you want your quick replies to scroll horizontally instead of stacking
-        // var width = 0;
-        // // resize this element so it will scroll horizontally
-        // for (var e = 0; e < elements.length; e++) {
-        //     width = width + elements[e].offsetWidth + 18;
-        // }
-        // list.style.width = width + 'px';
-
         if (message.disable_input) {
           that.input.disabled = true;
         } else {
@@ -1126,8 +1169,6 @@ var Botkit = {
             el.href = '#';
 
             el.onclick = function () {
-
-              // console.log(reply.title, reply.payload);
               that.sendCustom(reply.title, reply.payload);
             }
 
@@ -1139,14 +1180,6 @@ var Botkit = {
         }
 
         that.replies.appendChild(list);
-
-        // uncomment this code if you want your quick replies to scroll horizontally instead of stacking
-        // var width = 0;
-        // // resize this element so it will scroll horizontally
-        // for (var e = 0; e < elements.length; e++) {
-        //     width = width + elements[e].offsetWidth + 18;
-        // }
-        // list.style.width = width + 'px';
 
         if (message.disable_input) {
           that.input.disabled = true;
@@ -1171,21 +1204,14 @@ var Botkit = {
 
 
     if (window.self !== window.top) {
-      // this is embedded in an iframe.
-      // send a message to the master frame to tell it that the chat client is ready
-      // do NOT automatically connect... rather wait for the connect command.
       that.parent_window = window.parent;
       window.addEventListener("message", that.receiveCommand, false);
       that.sendEvent({
         type: 'event',
         name: 'booted'
       });
-      // console.log('Messenger booted in embedded mode');
 
     } else {
-
-      // console.log('Messenger booted in stand-alone mode');
-      // this is a stand-alone client. connect immediately.
       that.connect(user);
     }
 
@@ -1195,12 +1221,7 @@ var Botkit = {
 
 
 (function () {
-  // your page initialization code here
-  // the DOM will be available here
   Botkit.boot();
-  // $(document).ready(function () {
-  //   $('.carousel').carousel('pause');
-  // })
 })();
 
 
