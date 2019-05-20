@@ -93,6 +93,7 @@ const norm2vn = {
   "nha hang":"mở nhà hàng",
   "showroom":"mở showroom",
   "kd":"kinh doanh",
+  "kd ks":"kinh doanh khách sạn",
   "shop":"mở shop",
   "thue":"thuê",
   "cty":"làm công ty",
