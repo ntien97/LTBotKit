@@ -216,9 +216,9 @@ module.exports = function (controller) {
                             bucket = []
                             promiseBucket.id = []
                             if (response_body.initial_fill == false) {
-                                conversation[message.user].push({ "bot": resp.dontunderstand });
+                                conversation[message.user].push({ "bot": response_body.question });
                                 bot.reply(message, {
-                                    text: resp.dontunderstand
+                                    text: response_body.question
                                 })
                             } else
                                 if (response_body.has_results === true) {
