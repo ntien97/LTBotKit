@@ -399,7 +399,7 @@ module.exports = function (controller) {
         if (raw_mesg && raw_mesg.length > 0) {
             request.post(CONVERSATION_MANAGER_ENDPOINT, {
                 json: {
-                    graph_id: id,
+                    graph_id: message.user,
                     message: raw_mesg
                 }
             }, (error, res, body) => {
