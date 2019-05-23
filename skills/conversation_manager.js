@@ -177,10 +177,10 @@ module.exports = function (controller) {
             raw_mesg = "";
         }
 
-        if (!promiseBucket.id) {
-            promiseBucket.id = []
+        if (!promiseBucket[id]) {
+            promiseBucket[id] = []
         }
-        var bucket = promiseBucket.id
+        var bucket = promiseBucket[id]
         var pLoading = { value: true };
         bucket.push(pLoading)
 
@@ -218,9 +218,9 @@ module.exports = function (controller) {
                         //     graph: graph
                         // })
                         console.log("***")
-                        if (promiseBucket.id.every(ele => { return ele.value === false })) {
+                        if (promiseBucket[id].every(ele => { return ele.value === false })) {
                             bucket = []
-                            promiseBucket.id = []
+                            promiseBucket[id] = []
                             if (response_body.initial_fill == false) {
                                 conversation[message.user].push("bot: " + response_body.question);
                                 bot.reply(message, {
@@ -393,7 +393,7 @@ module.exports = function (controller) {
                 })
             } else {
                 console.log(bucket)
-                console.log(promiseBucket)
+                console.log(JSON.stringify(promiseBucket))
             }
         }
 
