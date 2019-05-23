@@ -412,7 +412,7 @@ module.exports = function (controller) {
                     })
                     return
                 }
-                console.log("FILL: " + body);
+                console.log("FILL: " + JSON.stringify(body));
                 requestGET()
             })
         } else {
