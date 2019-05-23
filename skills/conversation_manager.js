@@ -202,7 +202,11 @@ module.exports = function (controller) {
                 request.get(CONVERSATION_MANAGER_ENDPOINT + "?graph_id=" + id + postfix_force_show, {}, (error, res, body) => {
                     // console.log(body)
                     if (error) {
-                        console.error(error)
+                        conversation[message.user].push("bot: "+ resp.err );
+                        bot.reply(message, {
+                            graph: graph,
+                            text: resp.err
+                        })
                         return
                     }
                     try {
