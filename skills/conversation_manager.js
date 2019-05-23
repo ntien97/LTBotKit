@@ -95,9 +95,9 @@ module.exports = function (controller) {
         console.log(message);
         if (raw_mesg) {
             if (conversation[message.user]) {
-                conversation[message.user].push({ "user": raw_mesg });
+                conversation[message.user].push("user: " + raw_mesg );
             } else {
-                conversation[message.user] = [{ "user": raw_mesg }];
+                conversation[message.user] = ["user: " + raw_mesg];
             }
         }
         if (message.rating_prop) {
@@ -108,7 +108,7 @@ module.exports = function (controller) {
             return;
         }
         if (message.continue) {
-            conversation[message.user].push({ "bot": resp.whatyourattr });
+            conversation[message.user].push("bot: "+ resp.whatyourattr );
             bot.reply(message, resp.whatyourattr);
             return;
         }
@@ -118,7 +118,7 @@ module.exports = function (controller) {
             appropriate[message.user] = "phu_hop"; // "khong_phu_hop", "hoi_thieu", "phu_hop", "hoi_du"
             catched_intents[message.user] = message.catched_intents;
             edited_intents[message.user] = message.catched_intents;
-            conversation[message.user].push({ "bot": resp.start_rating });
+            conversation[message.user].push("bot: "+  resp.start_rating );
             bot.reply(message, {
                 text: resp.start_rating,
                 start_rating: true,
@@ -218,7 +218,7 @@ module.exports = function (controller) {
                             bucket = []
                             promiseBucket.id = []
                             if (response_body.initial_fill == false) {
-                                conversation[message.user].push({ "bot": response_body.question });
+                                conversation[message.user].push("bot: " + response_body.question);
                                 bot.reply(message, {
                                     text: response_body.question
                                 })
@@ -260,14 +260,14 @@ module.exports = function (controller) {
                                             })(mentioned_attributes[i]);
                                         }
                                         if (list && list.length > 0) {
-                                            conversation[message.user].push({ "bot": resp.cantfind });
+                                            conversation[message.user].push("bot: " +resp.cantfind );
                                             bot.reply(message, {
                                                 text: resp.cantfind,
                                                 attr_list: list,
                                                 graph: graph,
                                             })
                                         } else {
-                                            conversation[message.user].push({ "bot": resp.wetried });
+                                            conversation[message.user].push("bot: " +resp.wetried );
                                             bot.reply(message, { graph: graph, text: resp.wetried })
                                         }
 
@@ -275,7 +275,7 @@ module.exports = function (controller) {
                                         // for result_container != []
                                         // show kết quả 
                                         if (response_body.intent_values_container && !isEmpty(response_body.intent_values_container)) {
-                                            conversation[message.user].push({ "bot": resp.showall });
+                                            conversation[message.user].push("bot: " +resp.showall );
                                             bot.reply(message, {
                                                 text: resp.showall,
                                                 intent_dict: response_body.intent_values_container,
@@ -298,8 +298,8 @@ module.exports = function (controller) {
                                             })
                                         } else {
                                             console.log(response_body.result_container)
-                                            conversation[message.user].push({ "bot": response_body.intent_response ? response_body.intent_response : "Kết quả của bạn: " });
-                                            conversation[message.user].push({ "bot": "Bạn có muốn thêm yêu cầu gì không?" });
+                                            conversation[message.user].push("bot: " + (response_body.intent_response ? response_body.intent_response : "Kết quả của bạn: ") );
+                                            conversation[message.user].push("bot: " + "Bạn có muốn thêm yêu cầu gì không?" );
                                             bot.reply(message, {
                                                 text: [response_body.intent_response ? response_body.intent_response : "Kết quả của bạn: ", "Bạn có muốn thêm yêu cầu gì không?"],
                                                 show_results: response_body.result_container,
@@ -327,7 +327,7 @@ module.exports = function (controller) {
                                 } else {
                                     // chưa trả lời được do số doc còn nhiều
                                     if (showCustomButton) { // show nút bấm cho người dùng
-                                        conversation[message.user].push({ "bot": response_body.question });
+                                        conversation[message.user].push("bot: " + response_body.question);
                                         bot.reply(message, {
                                             text: response_body.question,
                                             graph: graph,
@@ -350,7 +350,7 @@ module.exports = function (controller) {
                                     else {
                                         // lấy câu hỏi lại rồi hỏi người dùng
                                         if (userMessageCount[id] > 3) {
-                                            conversation[message.user].push({ "bot": response_body.question });
+                                            conversation[message.user].push("bot: " + response_body.question);
                                             bot.reply(message, {
                                                 graph: graph,
                                                 text: response_body.question,
@@ -370,7 +370,7 @@ module.exports = function (controller) {
                                                 userMessageCount[id] = 1;
                                             }
                                             console.log("userMessageCount: ", userMessageCount[id])
-                                            conversation[message.user].push({ "bot": response_body.question });
+                                            conversation[message.user].push("bot: " + response_body.question);
                                             bot.reply(message, {
                                                 graph: graph,
                                                 text: response_body.question
@@ -380,7 +380,7 @@ module.exports = function (controller) {
                                 }
                         }
                     } catch (e) {
-                        conversation[message.user].push({ "bot": resp.err });
+                        conversation[message.user].push("bot: "+ resp.err );
                         bot.reply(message, {
                             graph: graph,
                             text: resp.err
@@ -401,7 +401,7 @@ module.exports = function (controller) {
             }, (error, res, body) => {
                 if (error) {
                     console.log(error);
-                    conversation[message.user].push({ "bot": resp.err });
+                    conversation[message.user].push("bot: "+ resp.err );
                     bot.reply(message, {
                         graph: {},
                         text: resp.err
