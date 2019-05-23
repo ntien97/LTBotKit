@@ -93,10 +93,12 @@ module.exports = function (controller) {
         var filter_attr = false;
         var filter_all = false;
         console.log(message);
-        if (conversation[message.user]) {
-            conversation[message.user].push({ "user": raw_mesg });
-        } else {
-            conversation[message.user] = [{ "user": raw_mesg }];
+        if (raw_mesg) {
+            if (conversation[message.user]) {
+                conversation[message.user].push({ "user": raw_mesg });
+            } else {
+                conversation[message.user] = [{ "user": raw_mesg }];
+            }
         }
         if (message.rating_prop) {
             console.log(message.rating_prop)
