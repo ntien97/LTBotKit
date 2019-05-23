@@ -913,7 +913,7 @@ var Botkit = {
                   if (obj.response && obj.value && obj.value.length > 0) {
                     txt += obj.response + " ";
                     for (var i = 0; i < obj.value.length; i++) {
-                      txt += obj.value[i] + ", "
+                      txt += (norm2vn[obj.value[i]] ? norm2vn[obj.value[i]] :  obj.value[i]) + ", "
                     }
                   }
                   if (txt !== "") {
