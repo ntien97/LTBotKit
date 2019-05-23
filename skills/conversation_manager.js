@@ -393,6 +393,7 @@ module.exports = function (controller) {
                 })
             } else {
                 console.log(bucket)
+                console.log(promiseBucket)
             }
         }
 
