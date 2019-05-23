@@ -17,7 +17,7 @@ module.exports = function (controller) {
     var userMessageCount = {
     }
 
-    var isRating = false;
+    var isRating = {};
     var star = {};
     var appropriate = {}; // "khong_phu_hop", "hoi_thieu", "phu_hop", "hoi_du"
     var catched_intents = {}; //arr type
@@ -50,7 +50,7 @@ module.exports = function (controller) {
 
     function restartConversation(bot, message) {
         var id = message.user
-        if (isRating && message.save) {
+        if (isRating[id] && message.save) {
             console.log("CALL SAVE API HERE")
             body = {
                 star: star[id],
@@ -68,7 +68,7 @@ module.exports = function (controller) {
                 }
             })
         }
-        isRating = false;
+        isRating[id] = false;
         bot.reply(message, { graph: {}, text: resp.thank });
         console.log(id)
         if (id) {
@@ -113,7 +113,7 @@ module.exports = function (controller) {
             return;
         }
         if (message.start_rating) {
-            isRating = true;
+            isRating[message.user] = true;
             star[message.user] = -1;
             appropriate[message.user] = "phu_hop"; // "khong_phu_hop", "hoi_thieu", "phu_hop", "hoi_du"
             catched_intents[message.user] = message.catched_intents;
