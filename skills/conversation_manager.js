@@ -19,7 +19,7 @@ module.exports = function (controller) {
 
     var isRating = {};
     var star = {};
-    var appropriate = {}; // "khong_phu_hop", "hoi_thieu", "phu_hop", "hoi_du"
+    var appropriate = {}; // "khong_phu_hop", "hoi_thieu", "phu_hop", "hoi_du",
     var catched_intents = {}; //arr type
     var edited_intents = {}; // arr type
     var conversation = {}; // arr type
